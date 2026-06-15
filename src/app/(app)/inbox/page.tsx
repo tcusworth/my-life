@@ -1,11 +1,12 @@
-import { Inbox } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import { formatDateTime } from "@/lib/dates";
 import type { Task } from "@/types/pocketbase";
+import { Inbox } from "lucide-react";
 import { AiInboxProcessor } from "./ai-inbox-processor";
+import { checkInboxReadiness } from "./actions";
 
 async function getInboxTasks() {
   const pb = await getAuthenticatedClient();
@@ -19,7 +20,10 @@ async function getInboxTasks() {
 }
 
 export default async function InboxPage() {
-  const tasks = await getInboxTasks();
+  const [tasks, readiness] = await Promise.all([
+    getInboxTasks(),
+    checkInboxReadiness(),
+  ]);
 
   return (
     <>
@@ -28,7 +32,7 @@ export default async function InboxPage() {
         description="Capture unstructured input and triage extracted tasks"
       />
       <div className="flex flex-1 flex-col gap-6 p-6">
-        <AiInboxProcessor />
+        <AiInboxProcessor readiness={readiness} />
 
         <section className="space-y-3">
           <h2 className="text-sm font-semibold">Inbox tasks</h2>
@@ -36,7 +40,7 @@ export default async function InboxPage() {
             <EmptyState
               icon={<Inbox className="size-5" />}
               title="Inbox is clear"
-              description="Paste notes above to let AI create tasks, projects, contacts, and follow-ups."
+              description="Paste notes above to extract tasks, projects, contacts, and follow-ups."
             />
           ) : (
             <ul className="divide-y rounded-xl border bg-card">

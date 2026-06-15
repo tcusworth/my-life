@@ -1,4 +1,6 @@
-export const POCKETBASE_URL =
-  process.env.NEXT_PUBLIC_POCKETBASE_URL ?? "http://127.0.0.1:8090";
+import { env } from "@/lib/config/environment";
+
+export const POCKETBASE_URL = env.pocketbaseUrl;
+export const APP_URL = env.appUrl;
 
 export const AUTH_COOKIE_NAME = "pb_auth";

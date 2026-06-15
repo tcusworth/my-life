@@ -1,0 +1,24 @@
+# Example Caddyfile for PocketBase on a VPS
+# Replace domains and paths before use.
+
+{
+	email admin@example.com
+}
+
+# PocketBase API (subdomain recommended)
+pb.example.com {
+	encode gzip
+	reverse_proxy 127.0.0.1:8090
+}
+
+# Next.js frontend (Vercel handles HTTPS if deployed there)
+# If self-hosting Next.js on the same VPS:
+app.example.com {
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+}
+
+# Redirect apex to app (optional)
+example.com {
+	redir https://app.example.com{uri} permanent
+}

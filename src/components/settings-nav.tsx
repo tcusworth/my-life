@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const settingsLinks = [
+  { href: "/settings/setup", label: "Setup" },
   { href: "/settings/devices", label: "Devices" },
   { href: "/settings/calendar", label: "Calendar" },
 ];

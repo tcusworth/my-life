@@ -11,6 +11,8 @@ Personal AI productivity web app built with Next.js and PocketBase.
 
 Calendar sync uses a future **macOS EventKit sync agent** — no CalDAV or direct Apple Calendar API in this app.
 
+**Deployment:** [DEPLOYMENT.md](./DEPLOYMENT.md) · [POCKETBASE_SETUP.md](./POCKETBASE_SETUP.md) · [ENVIRONMENT.md](./ENVIRONMENT.md)
+
 ## Getting started
 
 ### 1. PocketBase on your VPS
@@ -60,6 +62,7 @@ Set `OPENAI_API_KEY` in `.env.local` to enable inbox extraction on `/inbox`. Pas
 | `/today` | Tasks and time blocks for today |
 | `/projects` | Project list |
 | `/calendar` | Week view and events |
+| `/settings/setup` | Seed default areas |
 | `/settings/devices` | Register Mac sync agents |
 | `/settings/calendar` | Calendar sources from EventKit sync |
 

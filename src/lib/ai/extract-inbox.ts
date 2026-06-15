@@ -1,4 +1,6 @@
 import type { TaskPriority } from "@/types/pocketbase";
+import { isOpenAiConfigured } from "@/lib/config/environment";
+import { AppError } from "@/lib/errors/app-errors";
 
 export interface ExtractedTask {
   title: string;
@@ -133,9 +135,11 @@ export async function extractInboxContent(
     existingContacts: string[];
   }
 ): Promise<InboxExtraction> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  if (!isOpenAiConfigured()) {
+    throw new AppError(
+      "MISSING_OPENAI_KEY",
+      "OPENAI_API_KEY is not configured"
+    );
   }
 
   const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
@@ -149,6 +153,8 @@ Inbox text:
 """
 ${text}
 """`;
+
+  const apiKey = process.env.OPENAI_API_KEY!;
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
