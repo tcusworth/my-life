@@ -10,7 +10,6 @@ import {
   LayoutDashboard,
   Monitor,
   Settings,
-  Sparkles,
   Sun,
 } from "lucide-react";
 import {
@@ -60,8 +59,12 @@ function NavItems({
             <SidebarMenuButton
               render={<Link href={item.href} />}
               isActive={isActive}
+              className={cn(
+                "type-body",
+                isActive && "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+              )}
             >
-              <item.icon className={cn(isActive && "text-primary")} />
+              <item.icon className="size-4 opacity-70" />
               <span>{item.title}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -73,17 +76,17 @@ function NavItems({
 
 export function AppSidebar() {
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
+    <Sidebar collapsible="icon" className="border-sidebar-border">
+      <SidebarHeader className="border-b border-sidebar-border px-3 py-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" render={<Link href="/dashboard" />}>
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Sparkles className="size-4" />
+              <div className="flex size-7 items-center justify-center rounded-md bg-foreground text-background">
+                <span className="type-micro text-background normal-case tracking-normal">ML</span>
               </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">My Life</span>
-                <span className="truncate text-xs text-muted-foreground">
+              <div className="grid flex-1 text-left leading-tight">
+                <span className="type-h3 truncate">My Life</span>
+                <span className="type-small truncate text-muted-foreground">
                   Productivity
                 </span>
               </div>
@@ -92,28 +95,32 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="px-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="type-micro px-2 normal-case tracking-normal">
+            Workspace
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <NavItems items={mainNav} />
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarGroupLabel className="type-micro px-2 normal-case tracking-normal">
+            Settings
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <NavItems items={settingsNav} />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="border-t border-sidebar-border px-1 py-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton render={<Link href="/settings/devices" />}>
-              <Settings />
-              <span>Settings</span>
+              <Settings className="size-4 opacity-70" />
+              <span className="type-body">Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

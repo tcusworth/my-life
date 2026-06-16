@@ -1,0 +1,60 @@
+[
+  {
+    "id": "pbc_notes00001",
+    "name": "notes",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "nte_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "nte_proj001",
+        "name": "project",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_projects01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "nte_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "nte_cont001",
+        "name": "content",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

@@ -1,5 +1,16 @@
 import { ScrollText } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRow,
+} from "@/components/layout/data-table";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
 import { SettingsNav } from "@/components/settings-nav";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +24,11 @@ import type { SyncLogStatus } from "@/types/pocketbase";
 function statusBadge(status: SyncLogStatus) {
   switch (status) {
     case "success":
-      return <Badge variant="default">Success</Badge>;
+      return <Badge variant="success">Success</Badge>;
     case "error":
       return <Badge variant="destructive">Error</Badge>;
     case "partial":
-      return <Badge variant="secondary">Partial</Badge>;
+      return <Badge variant="outline">Partial</Badge>;
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
@@ -31,66 +42,63 @@ export default async function SyncLogsSettingsPage() {
   const logs = await getSyncLogs(100);
 
   return (
-    <>
-      <AppHeader
+    <PageShell>
+      <PageHeader
         title="Settings"
         description="Sync activity from Mac agents and the sync API"
       />
-      <SettingsNav />
+      <PageBody>
+        <SettingsNav />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">Sync logs</h2>
-          <p className="text-sm text-muted-foreground">
-            Recent inbound sync operations from registered Mac agents. Counts appear
-            when the API logged them in metadata.
-          </p>
-        </div>
-
-        {logs.length === 0 ? (
-          <EmptyState
-            icon={<ScrollText className="size-5" />}
-            title="No sync logs yet"
-            description="Run the macOS sync agent or the smoke test script to generate log entries."
-          />
-        ) : (
-          <div className="overflow-x-auto rounded-xl border">
-            <table className="w-full min-w-[900px] text-sm">
-              <thead className="border-b bg-muted/50 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Timestamp</th>
-                  <th className="px-4 py-3 font-medium">Agent</th>
-                  <th className="px-4 py-3 font-medium">Operation</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Message</th>
-                  <th className="px-4 py-3 font-medium">Count</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y bg-card">
-                {logs.map((log) => {
-                  const count = formatSyncLogCount(log.metadata);
-                  return (
-                    <tr key={log.id}>
-                      <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
-                        {formatDateTime(log.created)}
-                      </td>
-                      <td className="px-4 py-3">{log.deviceName ?? "—"}</td>
-                      <td className="px-4 py-3 capitalize">
-                        {formatOperation(log.entityType)}
-                      </td>
-                      <td className="px-4 py-3">{statusBadge(log.status)}</td>
-                      <td className="px-4 py-3 max-w-md text-muted-foreground">
-                        {log.message ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 tabular-nums">{count ?? "—"}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </>
+        <PageSection
+          title="Sync logs"
+          description="Recent inbound sync operations. Counts appear when logged in metadata."
+        >
+          {logs.length === 0 ? (
+            <EmptyState
+              icon={<ScrollText className="size-5" />}
+              title="No sync logs yet"
+              description="Run the macOS sync agent or the smoke test script to generate log entries."
+            />
+          ) : (
+            <DataTable className="overflow-x-auto">
+              <table className="w-full min-w-[900px]">
+                <DataTableHeader>
+                  <tr>
+                    <DataTableHead>Timestamp</DataTableHead>
+                    <DataTableHead>Agent</DataTableHead>
+                    <DataTableHead>Operation</DataTableHead>
+                    <DataTableHead>Status</DataTableHead>
+                    <DataTableHead>Message</DataTableHead>
+                    <DataTableHead>Count</DataTableHead>
+                  </tr>
+                </DataTableHeader>
+                <DataTableBody>
+                  {logs.map((log) => {
+                    const count = formatSyncLogCount(log.metadata);
+                    return (
+                      <DataTableRow key={log.id}>
+                        <DataTableCell className="whitespace-nowrap text-muted-foreground">
+                          {formatDateTime(log.created)}
+                        </DataTableCell>
+                        <DataTableCell>{log.deviceName ?? "—"}</DataTableCell>
+                        <DataTableCell className="capitalize">
+                          {formatOperation(log.entityType)}
+                        </DataTableCell>
+                        <DataTableCell>{statusBadge(log.status)}</DataTableCell>
+                        <DataTableCell className="max-w-md text-muted-foreground">
+                          {log.message ?? "—"}
+                        </DataTableCell>
+                        <DataTableCell className="tabular-nums">{count ?? "—"}</DataTableCell>
+                      </DataTableRow>
+                    );
+                  })}
+                </DataTableBody>
+              </table>
+            </DataTable>
+          )}
+        </PageSection>
+      </PageBody>
+    </PageShell>
   );
 }

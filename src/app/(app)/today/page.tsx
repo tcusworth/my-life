@@ -1,6 +1,12 @@
 import { Sun } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
+import { Card, CardContent } from "@/components/ui/card";
+import { H3 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import { getTodayRange, formatDateTime } from "@/lib/dates";
 import type { Task, TimeBlock } from "@/types/pocketbase";
@@ -30,9 +36,9 @@ export default async function TodayPage() {
   const isEmpty = tasks.length === 0 && timeBlocks.length === 0;
 
   return (
-    <>
-      <AppHeader title="Today" description={label} />
-      <div className="flex flex-1 flex-col gap-6 p-6">
+    <PageShell>
+      <PageHeader title="Today" description={label} />
+      <PageBody>
         {isEmpty ? (
           <EmptyState
             icon={<Sun className="size-5" />}
@@ -40,47 +46,58 @@ export default async function TodayPage() {
             description="Schedule tasks for today or add time blocks to plan your focus time."
           />
         ) : (
-          <div className="grid gap-6 lg:grid-cols-2">
-            <section className="rounded-xl border bg-card p-6">
-              <h2 className="font-semibold">Tasks</h2>
-              {tasks.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">No tasks scheduled.</p>
-              ) : (
-                <ul className="mt-4 space-y-3">
-                  {tasks.map((task) => (
-                    <li key={task.id} className="text-sm">
-                      <p className="font-medium">{task.title}</p>
-                      {task.scheduledFor && (
-                        <p className="text-muted-foreground">
-                          {formatDateTime(task.scheduledFor)}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+          <PageSection title="Schedule">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Card>
+                <CardContent className="pt-[var(--spacing-card)]">
+                  <H3>Tasks</H3>
+                  {tasks.length === 0 ? (
+                    <Small className="mt-3 block text-muted-foreground">
+                      No tasks scheduled.
+                    </Small>
+                  ) : (
+                    <ul className="mt-4 space-y-3">
+                      {tasks.map((task) => (
+                        <li key={task.id}>
+                          <p className="type-h3 font-normal">{task.title}</p>
+                          {task.scheduledFor && (
+                            <Small className="text-muted-foreground">
+                              {formatDateTime(task.scheduledFor)}
+                            </Small>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
 
-            <section className="rounded-xl border bg-card p-6">
-              <h2 className="font-semibold">Schedule</h2>
-              {timeBlocks.length === 0 ? (
-                <p className="mt-3 text-sm text-muted-foreground">No time blocks.</p>
-              ) : (
-                <ul className="mt-4 space-y-3">
-                  {timeBlocks.map((block) => (
-                    <li key={block.id} className="text-sm">
-                      <p className="font-medium">{block.title}</p>
-                      <p className="text-muted-foreground">
-                        {formatDateTime(block.startsAt)} – {formatDateTime(block.endsAt)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          </div>
+              <Card>
+                <CardContent className="pt-[var(--spacing-card)]">
+                  <H3>Time blocks</H3>
+                  {timeBlocks.length === 0 ? (
+                    <Small className="mt-3 block text-muted-foreground">
+                      No time blocks.
+                    </Small>
+                  ) : (
+                    <ul className="mt-4 space-y-3">
+                      {timeBlocks.map((block) => (
+                        <li key={block.id}>
+                          <p className="type-h3 font-normal">{block.title}</p>
+                          <Small className="text-muted-foreground">
+                            {formatDateTime(block.startsAt)} –{" "}
+                            {formatDateTime(block.endsAt)}
+                          </Small>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </PageSection>
         )}
-      </div>
-    </>
+      </PageBody>
+    </PageShell>
   );
 }

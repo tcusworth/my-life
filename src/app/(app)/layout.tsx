@@ -1,5 +1,6 @@
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { CommandPalette } from "@/components/os/command-palette";
 
 export default function AppLayout({
   children,
@@ -9,7 +10,12 @@ export default function AppLayout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="flex min-h-svh flex-col">{children}</SidebarInset>
+
+      <SidebarInset className="surface-page flex min-h-svh flex-col">
+        {children}
+      </SidebarInset>
+
+      <CommandPalette />
     </SidebarProvider>
   );
 }

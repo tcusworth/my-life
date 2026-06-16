@@ -1,8 +1,22 @@
+import Link from "next/link";
 import { Monitor } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRow,
+} from "@/components/layout/data-table";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
 import { SettingsNav } from "@/components/settings-nav";
 import { Badge } from "@/components/ui/badge";
+import { H3 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 import { formatDateTime } from "@/lib/dates";
 import { getDevicesWithSyncStats } from "@/lib/sync/observability";
 import type { SyncLogStatus } from "@/types/pocketbase";
@@ -16,11 +30,11 @@ function syncStatusBadge(status?: SyncLogStatus) {
 
   switch (status) {
     case "success":
-      return <Badge variant="default">Success</Badge>;
+      return <Badge variant="success">Success</Badge>;
     case "error":
       return <Badge variant="destructive">Error</Badge>;
     case "partial":
-      return <Badge variant="secondary">Partial</Badge>;
+      return <Badge variant="outline">Partial</Badge>;
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
@@ -30,93 +44,102 @@ export default async function DevicesSettingsPage() {
   const agents = await getDevicesWithSyncStats();
 
   return (
-    <>
-      <AppHeader
+    <PageShell>
+      <PageHeader
         title="Settings"
-        description="Mac Sync Agents and calendar integration"
+        description="Mac sync agents and calendar integration"
       />
-      <SettingsNav />
+      <PageBody>
+        <SettingsNav />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">Mac Sync Agents</h2>
-          <p className="text-sm text-muted-foreground">
-            Register Macs running the EventKit menu bar agent. Each agent receives a
-            unique API key for the sync API documented in{" "}
-            <code className="text-xs">MAC_SYNC_AGENT.md</code>. View sync activity in{" "}
-            <a href="/settings/sync-logs" className="underline underline-offset-2">
-              Sync logs
-            </a>
-            .
-          </p>
-        </div>
+        <PageSection
+          title="Mac sync agents"
+          description={
+            <>
+              Register Macs running the EventKit menu bar agent. Each agent receives a
+              unique API key documented in{" "}
+              <code className="rounded bg-muted px-1 py-0.5 type-micro normal-case">
+                MAC_SYNC_AGENT.md
+              </code>
+              . View activity in{" "}
+              <Link href="/settings/sync-logs" className="text-foreground underline underline-offset-2">
+                Sync logs
+              </Link>
+              .
+            </>
+          }
+        >
+          <RegisterSyncAgentForm />
 
-        <RegisterSyncAgentForm />
-
-        {agents.length === 0 ? (
-          <EmptyState
-            icon={<Monitor className="size-5" />}
-            title="No sync agents registered"
-            description="Register your Mac to enable calendar sync through the EventKit agent."
-          />
-        ) : (
-          <div className="overflow-x-auto rounded-xl border">
-            <table className="w-full min-w-[960px] text-sm">
-              <thead className="border-b bg-muted/50 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Version</th>
-                  <th className="px-4 py-3 font-medium">Last seen</th>
-                  <th className="px-4 py-3 font-medium">Last sync</th>
-                  <th className="px-4 py-3 font-medium">Sync status</th>
-                  <th className="px-4 py-3 font-medium">Calendars</th>
-                  <th className="px-4 py-3 font-medium">Events</th>
-                  <th className="px-4 py-3 font-medium">Agent</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y bg-card">
-                {agents.map(({ device: agent, stats }) => (
-                  <tr key={agent.id}>
-                    <td className="px-4 py-3">
-                      <p className="font-medium">{agent.name}</p>
-                      {stats.lastSyncMessage ? (
-                        <p className="mt-1 max-w-xs text-xs text-muted-foreground">
-                          {stats.lastSyncMessage}
-                        </p>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {agent.agentVersion ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDateTime(agent.lastSeenAt)}
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDateTime(stats.lastSyncAt)}
-                    </td>
-                    <td className="px-4 py-3">{syncStatusBadge(stats.lastSyncStatus)}</td>
-                    <td className="px-4 py-3 tabular-nums">{stats.calendarsSyncedCount}</td>
-                    <td className="px-4 py-3 tabular-nums">{stats.eventsSyncedCount}</td>
-                    <td className="px-4 py-3">
-                      <Badge variant={agent.isActive !== false ? "default" : "secondary"}>
-                        {agent.isActive !== false ? "Active" : "Revoked"}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3">
-                      <RevokeSyncAgentButton
-                        deviceId={agent.id}
-                        deviceName={agent.name}
-                        isActive={agent.isActive !== false}
-                      />
-                    </td>
+          {agents.length === 0 ? (
+            <EmptyState
+              icon={<Monitor className="size-5" />}
+              title="No sync agents registered"
+              description="Register your Mac to enable calendar sync through the EventKit agent."
+            />
+          ) : (
+            <DataTable className="overflow-x-auto">
+              <table className="w-full min-w-[960px]">
+                <DataTableHeader>
+                  <tr>
+                    <DataTableHead>Name</DataTableHead>
+                    <DataTableHead>Version</DataTableHead>
+                    <DataTableHead>Last seen</DataTableHead>
+                    <DataTableHead>Last sync</DataTableHead>
+                    <DataTableHead>Status</DataTableHead>
+                    <DataTableHead>Calendars</DataTableHead>
+                    <DataTableHead>Events</DataTableHead>
+                    <DataTableHead>Agent</DataTableHead>
+                    <DataTableHead>Actions</DataTableHead>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </>
+                </DataTableHeader>
+                <DataTableBody>
+                  {agents.map(({ device: agent, stats }) => (
+                    <DataTableRow key={agent.id}>
+                      <DataTableCell>
+                        <H3 className="font-normal">{agent.name}</H3>
+                        {stats.lastSyncMessage ? (
+                          <Small className="mt-1 block max-w-xs text-muted-foreground">
+                            {stats.lastSyncMessage}
+                          </Small>
+                        ) : null}
+                      </DataTableCell>
+                      <DataTableCell className="text-muted-foreground">
+                        {agent.agentVersion ?? "—"}
+                      </DataTableCell>
+                      <DataTableCell className="text-muted-foreground">
+                        {formatDateTime(agent.lastSeenAt)}
+                      </DataTableCell>
+                      <DataTableCell className="text-muted-foreground">
+                        {formatDateTime(stats.lastSyncAt)}
+                      </DataTableCell>
+                      <DataTableCell>{syncStatusBadge(stats.lastSyncStatus)}</DataTableCell>
+                      <DataTableCell className="tabular-nums">
+                        {stats.calendarsSyncedCount}
+                      </DataTableCell>
+                      <DataTableCell className="tabular-nums">
+                        {stats.eventsSyncedCount}
+                      </DataTableCell>
+                      <DataTableCell>
+                        <Badge variant={agent.isActive !== false ? "success" : "secondary"}>
+                          {agent.isActive !== false ? "Active" : "Revoked"}
+                        </Badge>
+                      </DataTableCell>
+                      <DataTableCell>
+                        <RevokeSyncAgentButton
+                          deviceId={agent.id}
+                          deviceName={agent.name}
+                          isActive={agent.isActive !== false}
+                        />
+                      </DataTableCell>
+                    </DataTableRow>
+                  ))}
+                </DataTableBody>
+              </table>
+            </DataTable>
+          )}
+        </PageSection>
+      </PageBody>
+    </PageShell>
   );
 }

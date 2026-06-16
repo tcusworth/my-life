@@ -1,7 +1,13 @@
 import { FolderKanban } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { H3 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import type { Project } from "@/types/pocketbase";
 
@@ -19,12 +25,12 @@ export default async function ProjectsPage() {
   const projects = await getProjects();
 
   return (
-    <>
-      <AppHeader
+    <PageShell>
+      <PageHeader
         title="Projects"
         description="Organize work into focused areas"
       />
-      <div className="flex flex-1 flex-col gap-4 p-6">
+      <PageBody>
         {projects.length === 0 ? (
           <EmptyState
             icon={<FolderKanban className="size-5" />}
@@ -32,36 +38,39 @@ export default async function ProjectsPage() {
             description="Create projects to group related tasks and notes. Project creation UI coming soon."
           />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
-              <article
-                key={project.id}
-                className="rounded-xl border bg-card p-5"
-                style={
-                  project.color
-                    ? { borderLeftColor: project.color, borderLeftWidth: 4 }
-                    : undefined
-                }
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-semibold">{project.name}</h2>
-                  <Badge variant={project.status === "active" ? "default" : "secondary"}>
-                    {project.status}
-                  </Badge>
-                </div>
-                {project.expand?.area && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {project.expand.area.name}
-                  </p>
-                )}
-                {project.icon && (
-                  <p className="mt-1 text-sm text-muted-foreground">{project.icon}</p>
-                )}
-              </article>
-            ))}
-          </div>
+          <PageSection title="All projects">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="border-l-[3px]"
+                  style={
+                    project.color
+                      ? { borderLeftColor: project.color }
+                      : undefined
+                  }
+                >
+                  <CardContent className="pt-[var(--spacing-card)]">
+                    <div className="flex items-start justify-between gap-2">
+                      <H3>{project.name}</H3>
+                      <Badge
+                        variant={project.status === "active" ? "default" : "secondary"}
+                      >
+                        {project.status}
+                      </Badge>
+                    </div>
+                    {project.expand?.area && (
+                      <Small className="mt-2 block text-muted-foreground">
+                        {project.expand.area.name}
+                      </Small>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </PageSection>
         )}
-      </div>
-    </>
+      </PageBody>
+    </PageShell>
   );
 }

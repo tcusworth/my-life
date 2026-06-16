@@ -24,9 +24,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pb = getBrowserClient();
-  const [user, setUser] = useState<User | null>(
-    (pb.authStore.model as User | null) ?? null
-  );
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

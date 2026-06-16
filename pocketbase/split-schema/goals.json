@@ -1,0 +1,110 @@
+[
+  {
+    "id": "pbc_goals00001",
+    "name": "goals",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "goal_user01",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "goal_area01",
+        "name": "area",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_areas00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "goal_title1",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_desc01",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_stat01",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "active",
+          "completed",
+          "on_hold"
+        ]
+      },
+      {
+        "id": "goal_tgt01",
+        "name": "targetDate",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_prog01",
+        "name": "progress",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": 0,
+        "max": 100,
+        "noDecimal": true
+      },
+      {
+        "id": "goal_sort01",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_goals_user_status ON goals (user, status)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

@@ -1,130 +1,347 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─── Design tokens ─────────────────────────────────────────────────────── */
+
 @theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* 8pt spacing scale */
+  --spacing-0: 0;
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-5: 1.25rem;   /* 20px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-10: 2.5rem;   /* 40px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-page-x: var(--spacing-6);
+  --spacing-page-y: var(--spacing-6);
+  --spacing-section: var(--spacing-6);
+  --spacing-card: var(--spacing-4);
+
+  /* Layout */
+  --width-content: 72rem;
+  --width-content-narrow: 48rem;
+
+  /* Typography scale */
+  --text-h1: 1.5rem;
+  --text-h1--line-height: 2rem;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 600;
+
+  --text-h2: 1.125rem;
+  --text-h2--line-height: 1.5rem;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 0.9375rem;
+  --text-h3--line-height: 1.375rem;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 500;
+
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.375rem;
+  --text-body--font-weight: 400;
+
+  --text-small: 0.8125rem;
+  --text-small--line-height: 1.25rem;
+  --text-small--font-weight: 400;
+
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-micro--font-weight: 500;
+  --text-micro--letter-spacing: 0.02em;
+
+  /* Semantic colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  /* Radius — restrained, product-grade */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.625rem;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Surface hierarchy */
+  --surface-page-bg: #f5f5f7;
+  --surface-card-bg: #ffffff;
+  --surface-card-border: #e5e5e7;
+  --surface-panel-bg: #ffffff;
+  --surface-panel-border: #d8d8dc;
+  --surface-floating-bg: rgb(255 255 255 / 0.88);
+  --surface-floating-border: rgb(0 0 0 / 0.07);
+
+  --background: var(--surface-page-bg);
+  --foreground: #171717;
+  --surface: var(--surface-card-bg);
+  --surface-raised: var(--surface-panel-bg);
+  --card: var(--surface-card-bg);
+  --card-foreground: #171717;
+  --popover: var(--surface-floating-bg);
+  --popover-foreground: #171717;
+  --primary: #171717;
+  --primary-foreground: #fafafa;
+  --secondary: #ececee;
+  --secondary-foreground: #404040;
+  --muted: #ececee;
+  --muted-foreground: #737373;
+  --accent: #ececee;
+  --accent-foreground: #171717;
+  --destructive: #dc2626;
+  --border: #e5e5e7;
+  --border-subtle: #efeff1;
+  --input: #e5e5e7;
+  --ring: #a3a3a3;
+
+  --sidebar: #f0f0f2;
+  --sidebar-foreground: #525252;
+  --sidebar-border: #e5e5e7;
+  --sidebar-accent: #e8e8eb;
+  --sidebar-accent-foreground: #171717;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-panel: 0 2px 6px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
+  --shadow-floating: 0 8px 24px rgb(0 0 0 / 0.1), 0 2px 8px rgb(0 0 0 / 0.05);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --surface-page-bg: #0a0a0a;
+  --surface-card-bg: #141414;
+  --surface-card-border: #2a2a2a;
+  --surface-panel-bg: #1a1a1a;
+  --surface-panel-border: #333333;
+  --surface-floating-bg: rgb(26 26 26 / 0.92);
+  --surface-floating-border: rgb(255 255 255 / 0.08);
+
+  --background: var(--surface-page-bg);
+  --foreground: #ededed;
+  --surface: var(--surface-card-bg);
+  --surface-raised: var(--surface-panel-bg);
+  --card: var(--surface-card-bg);
+  --card-foreground: #ededed;
+  --popover: var(--surface-floating-bg);
+  --popover-foreground: #ededed;
+  --primary: #fafafa;
+  --primary-foreground: #171717;
+  --secondary: #262626;
+  --secondary-foreground: #d4d4d4;
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+  --accent: #262626;
+  --accent-foreground: #ededed;
+  --destructive: #ef4444;
+  --border: #2e2e2e;
+  --border-subtle: #242424;
+  --input: #2e2e2e;
+  --ring: #525252;
+
+  --sidebar: #0f0f0f;
+  --sidebar-foreground: #a3a3a3;
+  --sidebar-border: #262626;
+  --sidebar-accent: #1f1f1f;
+  --sidebar-accent-foreground: #ededed;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.24);
+  --shadow-panel: 0 2px 8px rgb(0 0 0 / 0.32), 0 1px 2px rgb(0 0 0 / 0.2);
+  --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.45), 0 4px 12px rgb(0 0 0 / 0.25);
 }
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/40;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
-    @apply font-sans;
+    @apply font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
+    background-color: var(--surface-page-bg);
+    color: var(--foreground);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-weight: var(--text-body--font-weight);
+  }
+}
+
+/* ─── Typography utilities ──────────────────────────────────────────────── */
+
+@layer components {
+  .type-h1 {
+    font-size: var(--text-h1);
+    line-height: var(--text-h1--line-height);
+    letter-spacing: var(--text-h1--letter-spacing);
+    font-weight: var(--text-h1--font-weight);
+    color: var(--foreground);
+  }
+
+  .type-h2 {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    letter-spacing: var(--text-h2--letter-spacing);
+    font-weight: var(--text-h2--font-weight);
+    color: var(--foreground);
+  }
+
+  .type-h3 {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    letter-spacing: var(--text-h3--letter-spacing);
+    font-weight: var(--text-h3--font-weight);
+    color: var(--foreground);
+  }
+
+  .type-body {
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-weight: var(--text-body--font-weight);
+    color: var(--foreground);
+  }
+
+  .type-small {
+    font-size: var(--text-small);
+    line-height: var(--text-small--line-height);
+    font-weight: var(--text-small--font-weight);
+    color: var(--muted-foreground);
+  }
+
+  .type-micro {
+    font-size: var(--text-micro);
+    line-height: var(--text-micro--line-height);
+    font-weight: var(--text-micro--font-weight);
+    letter-spacing: var(--text-micro--letter-spacing);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* ─── Surface hierarchy (usage policy) ────────────────────────────────────
+   *
+   * PageShell (surface-page via app layout)
+   *   → PageHeader
+   *   → PageBody
+   *     → PageSection (surface-panel) — grouped functional regions
+   *       → Card / DataTable / lists (surface-card) — content
+   *
+   * .surface-page
+   *   Base app canvas. Neutral background, no shadow.
+   *   USE: SidebarInset, auth/login full-page wrappers, body background.
+   *   DO NOT USE: cards, widgets, tables, sections, headers, dropdowns.
+   *
+   * .surface-card
+   *   Default content container. Border + subtle shadow + 16px padding.
+   *   USE: Card component, DataTable, task lists, alerts, nested content
+   *        inside PageSection.
+   *   DO NOT USE: page layout, app shell, empty states, overlays, section
+   *        wrappers (use PageSection / surface-panel instead).
+   *
+   * .surface-panel
+   *   Elevated grouped region. Stronger shadow + higher contrast.
+   *   USE: PageSection, calendar week grid cells.
+   *   DO NOT USE: individual widgets, list rows, simple text blocks, page
+   *        background (use surface-page).
+   *
+   * .surface-floating
+   *   Highest elevation. Blur + shadow + border.
+   *   USE: dropdown menus, sheets, popovers only.
+   *   DO NOT USE: page content, cards, sections, inline alerts.
+   *
+   * .surface-empty
+   *   Placeholder state. Transparent, dashed border, no shadow.
+   *   USE: EmptyState component only.
+   *   DO NOT USE: data containers, sections, or any populated content.
+   *
+   * .surface-flush
+   *   Modifier: removes default surface padding.
+   *   USE: Card, DataTable, PageSection, flush list containers where inner
+   *        layout defines spacing (CardHeader, table cells, etc.).
+   *   DO NOT USE: standalone on surface-page or surface-empty.
+   *
+   * ─────────────────────────────────────────────────────────────────────── */
+
+  .surface-page {
+      background:
+        radial-gradient(
+          circle at top left,
+       rgba(99,102,241,0.08),
+        transparent 35%
+    ),
+    #f8fafc;
+}
+
+  .surface-card {
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 16px;
+    box-shadow:
+      0 1px 2px rgba(15,23,42,0.04),
+     0 8px 24px rgba(15,23,42,0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: var(--spacing-card);
+}
+
+  .surface-panel {
+    background-color: var(--surface-panel-bg);
+    border: 1px solid var(--surface-panel-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-panel);
+    padding: var(--spacing-card);
+  }
+
+  .surface-floating {
+    background-color: var(--surface-floating-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--surface-floating-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-floating);
+  }
+
+  .surface-empty {
+    background-color: transparent;
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+  }
+
+  /* Remove default padding when inner layout manages spacing */
+  .surface-flush {
+    padding: 0;
   }
 }

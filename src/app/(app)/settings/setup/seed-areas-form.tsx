@@ -39,7 +39,7 @@ export function SeedAreasForm() {
           {DEFAULT_AREAS.map((area) => (
             <li
               key={area}
-              className="rounded-md border bg-muted/30 px-3 py-2 text-sm"
+              className="surface-empty px-3 py-2 type-body text-foreground normal-case"
             >
               {area}
             </li>
@@ -68,7 +68,7 @@ export function SeedAreasForm() {
         {error && <p className="text-sm text-destructive">{error}</p>}
 
         {result && (
-          <div className="rounded-lg border bg-muted/40 p-4 text-sm">
+          <div className="surface-card surface-flush type-body p-4">
             {result.created.length > 0 && (
               <p>Created: {result.created.join(", ")}</p>
             )}

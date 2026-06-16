@@ -289,7 +289,7 @@ function ReviewCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border bg-card p-4">
+    <div className="surface-card surface-flush p-4">
       <div className="mb-3 flex items-center gap-2">
         <Checkbox checked={selected} onCheckedChange={(value) => onToggle(value === true)} />
         <span className="text-xs text-muted-foreground">

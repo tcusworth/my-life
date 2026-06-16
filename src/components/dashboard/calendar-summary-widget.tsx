@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,6 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { H2 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 import { formatDateTime } from "@/lib/dates";
 import type { CalendarEvent } from "@/types/pocketbase";
 
@@ -23,41 +24,38 @@ export function CalendarSummaryWidget({
   weekLabel,
 }: CalendarSummaryWidgetProps) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <CalendarDays className="size-4 text-primary" />
-          Calendar Summary
-        </CardTitle>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Calendar</CardTitle>
         <CardDescription>{weekLabel}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-4 text-sm">
+        <div className="flex gap-8">
           <div>
-            <p className="text-2xl font-semibold tabular-nums">{todayEvents.length}</p>
-            <p className="text-muted-foreground">Today</p>
+            <H2 className="tabular-nums">{todayEvents.length}</H2>
+            <Small className="text-muted-foreground">Today</Small>
           </div>
           <div>
-            <p className="text-2xl font-semibold tabular-nums">{weekEvents.length}</p>
-            <p className="text-muted-foreground">This week</p>
+            <H2 className="tabular-nums">{weekEvents.length}</H2>
+            <Small className="text-muted-foreground">This week</Small>
           </div>
         </div>
 
         {todayEvents.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <Small className="text-muted-foreground">
             No events today. Calendar syncs via the macOS EventKit agent.
-          </p>
+          </Small>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {todayEvents.slice(0, 3).map((event) => (
-              <li key={event.id} className="flex items-start justify-between gap-2 text-sm">
+              <li key={event.id} className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-medium">{event.title}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="type-h3 font-normal">{event.title}</p>
+                  <Small className="text-muted-foreground">
                     {formatDateTime(event.startsAt)}
-                  </p>
+                  </Small>
                 </div>
-                {event.isAllDay && <Badge variant="secondary">All day</Badge>}
+                {event.isAllDay && <Badge variant="outline">All day</Badge>}
               </li>
             ))}
           </ul>
@@ -65,7 +63,7 @@ export function CalendarSummaryWidget({
 
         <Link
           href="/calendar"
-          className="inline-block text-xs font-medium text-primary hover:underline"
+          className="type-small inline-block text-foreground hover:underline"
         >
           Open calendar
         </Link>

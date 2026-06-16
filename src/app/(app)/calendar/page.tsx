@@ -1,5 +1,8 @@
 import { CalendarDays } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import { getWeekRange, parseWeekStartParam } from "@/lib/dates";
@@ -46,22 +49,26 @@ export default async function CalendarPage({
   const { events, weekLabel } = await getWeekEvents(weekStart, debugEnabled);
 
   return (
-    <>
-      <AppHeader title="Calendar" description={weekLabel} />
-      <div className="flex flex-1 flex-col gap-6 p-6">
-        <CalendarWeekNav weekStart={weekStart} debugEnabled={debugEnabled} />
-        <WeekGrid weekStart={weekStart} events={events} />
+    <PageShell>
+      <PageHeader title="Calendar" description={weekLabel} />
+      <PageBody>
+        <PageSection title="Week view">
+          <CalendarWeekNav weekStart={weekStart} debugEnabled={debugEnabled} />
+          <WeekGrid weekStart={weekStart} events={events} />
+        </PageSection>
 
         {events.length === 0 ? (
           <EmptyState
             icon={<CalendarDays className="size-5" />}
             title="No events this week"
-            description="Calendar events sync from your Mac via the EventKit agent. No CalDAV integration is used."
+            description="Events sync from your Mac via the EventKit agent."
           />
         ) : (
-          <CalendarEventList events={events} showDeleted={debugEnabled} />
+          <PageSection title="Events">
+            <CalendarEventList events={events} showDeleted={debugEnabled} />
+          </PageSection>
         )}
-      </div>
-    </>
+      </PageBody>
+    </PageShell>
   );
 }
