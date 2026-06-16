@@ -66,8 +66,13 @@ Set in **Vercel → Project → Settings → Environment Variables** (Production
 | `NEXT_PUBLIC_APP_URL` | `https://your-app.vercel.app` |
 | `OPENAI_API_KEY` | Your OpenAI key |
 | `OPENAI_MODEL` | `gpt-4o-mini` (optional) |
+| `POCKETBASE_ADMIN_EMAIL` | PocketBase superuser email (sync API) |
+| `POCKETBASE_ADMIN_PASSWORD` | PocketBase superuser password (sync API) |
+| `NEXT_PUBLIC_SYNC_DEBUG` | Optional — show deleted events on `/calendar` |
 
 Deploy. Vercel runs `next build` automatically.
+
+See [MAC_SYNC_AGENT.md](./MAC_SYNC_AGENT.md) for macOS agent API endpoints and [SYNC_TEST_PLAN.md](./SYNC_TEST_PLAN.md) for post-deploy sync verification.
 
 ### Custom domain (optional)
 
@@ -81,6 +86,45 @@ Add `app.example.com` in Vercel → Domains, then update `NEXT_PUBLIC_APP_URL`.
 2. **Settings → Setup** → **Seed default areas**
 3. **Inbox** → verify green readiness alert (PocketBase + OAuth + OpenAI)
 4. Paste test notes → **Extract items** → review → **Create selected**
+5. **Settings → Devices** → register Mac sync agent → run smoke test or macOS agent
+6. **Settings → Sync logs** → confirm inbound sync entries after first agent run
+
+---
+
+## Step 4: Verify calendar sync
+
+### Local
+
+```bash
+npm run smoke:sync -- \
+  --base-url http://localhost:3000 \
+  --api-key ml_sync_<key-from-settings-devices> \
+  --post-calendar \
+  --post-event
+```
+
+Then run the macOS agent from `apps/mac-sync-agent/` against `http://localhost:3000`.
+
+### Production
+
+```bash
+npm run smoke:sync -- \
+  --base-url https://your-app.vercel.app \
+  --api-key ml_sync_<production-key>
+```
+
+Check **Settings → Devices** (last sync status, counts), **Settings → Calendar**, and **Settings → Sync logs**.
+
+Full checklist: [SYNC_TEST_PLAN.md](./SYNC_TEST_PLAN.md)
+
+### Common sync errors
+
+| HTTP | Cause | Fix |
+|------|-------|-----|
+| **401** | Missing, invalid, or revoked API key | Re-register at Settings → Devices |
+| **403** | Resource belongs to another user/agent | Verify device id on pending writes |
+| **400** | Invalid JSON or field validation | See response `issues`; match [MAC_SYNC_AGENT.md](./MAC_SYNC_AGENT.md) |
+| **503** | Admin credentials missing on Next.js host | Set `POCKETBASE_ADMIN_*` on Vercel and redeploy |
 
 ---
 
@@ -153,12 +197,14 @@ jobs:
 | Inbox shows OpenAI error | Set `OPENAI_API_KEY` on Vercel; redeploy |
 | Empty extraction | Add more actionable content; check model supports JSON schema |
 | CORS / cookie issues | PocketBase Application URL must match public PB URL; use HTTPS in prod |
+| Sync API 401 | Revoked or wrong API key — re-register device |
+| Sync API 503 | Set `POCKETBASE_ADMIN_EMAIL` / `POCKETBASE_ADMIN_PASSWORD` on Next.js host |
+| No sync logs | Agent or smoke test has not hit `/api/sync/*` yet |
 
 ---
 
 ## What is not deployed yet
 
-- macOS EventKit sync agent
 - CalDAV integration
 
-Calendar data will sync once the EventKit agent is built and devices are registered under **Settings → Devices**.
+Calendar data syncs via the EventKit macOS agent once devices are registered under **Settings → Devices**.

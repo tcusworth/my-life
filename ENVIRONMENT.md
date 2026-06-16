@@ -10,6 +10,9 @@ This document describes all environment variables used by **My Life** in develop
 | `NEXT_PUBLIC_APP_URL` | Production | Client + Server | `https://app.example.com` |
 | `OPENAI_API_KEY` | For AI inbox | Server only | `sk-...` |
 | `OPENAI_MODEL` | No | Server only | `gpt-4o-mini` |
+| `POCKETBASE_ADMIN_EMAIL` | Sync API | Server only | `admin@example.com` |
+| `POCKETBASE_ADMIN_PASSWORD` | Sync API | Server only | `...` |
+| `NEXT_PUBLIC_SYNC_DEBUG` | Calendar UI | Client + Server | `true` |
 | `SEED_USER_EMAIL` | Seed script only | CLI | `you@example.com` |
 | `SEED_USER_PASSWORD` | Seed script only | CLI | `...` |
 | `POCKETBASE_URL` | Seed script only | CLI | `https://pb.example.com` |
@@ -51,6 +54,16 @@ If missing:
 OpenAI model for structured inbox extraction. Defaults to `gpt-4o-mini`.
 
 Examples: `gpt-4o-mini`, `gpt-4o`
+
+### `POCKETBASE_ADMIN_EMAIL` / `POCKETBASE_ADMIN_PASSWORD`
+
+Server-side PocketBase superuser credentials used **only** by `/api/sync/*` routes to read/write records on behalf of authenticated sync agents. Never expose to the client or macOS agent.
+
+If missing, sync API routes return `503 SERVER_MISCONFIGURED`.
+
+### `NEXT_PUBLIC_SYNC_DEBUG`
+
+When set to `true`, the **Calendar** page shows soft-deleted events (with a **Deleted** badge). You can also append `?debug=1` to `/calendar` without enabling this env var.
 
 ---
 

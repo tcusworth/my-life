@@ -98,7 +98,9 @@
         "hidden": false
       }
     ],
-    "indexes": [],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_devices_api_key_hash ON devices (apiKeyHash)"
+    ],
     "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
     "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
     "createRule": "@request.auth.id != \"\" && user = @request.auth.id",

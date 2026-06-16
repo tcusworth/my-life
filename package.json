@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:areas": "node scripts/seed-areas.mjs"
+    "seed:areas": "node scripts/seed-areas.mjs",
+    "test:sync": "tsx --test src/lib/sync/validation.test.ts",
+    "smoke:sync": "tsx scripts/smoke-test-sync.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -31,6 +33,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

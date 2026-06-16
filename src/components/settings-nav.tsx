@@ -8,6 +8,7 @@ const settingsLinks = [
   { href: "/settings/setup", label: "Setup" },
   { href: "/settings/devices", label: "Devices" },
   { href: "/settings/calendar", label: "Calendar" },
+  { href: "/settings/sync-logs", label: "Sync logs" },
 ];
 
 export function SettingsNav() {

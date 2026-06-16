@@ -2,9 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
-import { generateApiKey, hashApiKey } from "@/lib/crypto";
+import { registerSyncAgent } from "@/lib/sync/register";
 
-export async function registerDevice(formData: FormData) {
+export async function registerSyncAgentAction(formData: FormData) {
   const pb = await getAuthenticatedClient();
   if (!pb?.authStore.record) {
     throw new Error("Unauthorized");
@@ -12,21 +12,28 @@ export async function registerDevice(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   if (!name) {
-    throw new Error("Device name is required");
+    throw new Error("Agent name is required");
   }
 
-  const apiKey = generateApiKey();
-  const apiKeyHash = hashApiKey(apiKey);
+  const agentVersion = String(formData.get("agentVersion") ?? "").trim();
 
-  await pb.collection("devices").create({
-    user: pb.authStore.record.id,
+  const result = await registerSyncAgent(pb, pb.authStore.record.id, {
     name,
-    platform: "macos",
-    apiKeyHash,
-    isActive: true,
+    agentVersion: agentVersion || undefined,
   });
 
   revalidatePath("/settings/devices");
 
-  return { apiKey };
+  return result;
+}
+
+export async function revokeSyncAgentAction(deviceId: string) {
+  const pb = await getAuthenticatedClient();
+  if (!pb?.authStore.record) {
+    throw new Error("Unauthorized");
+  }
+
+  await pb.collection("devices").update(deviceId, { isActive: false });
+
+  revalidatePath("/settings/devices");
 }
