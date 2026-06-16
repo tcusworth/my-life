@@ -1,282 +1,255 @@
-"use client";
+"use client"
 
-import { useEffect, useMemo, useState } from "react";
-import {
-  Bot,
-  CalendarDays,
-  CheckCircle2,
-  FolderKanban,
-  Inbox,
-  Loader2,
-  Search,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useApp } from '@/contexts/app-context'
 
-type CommandItem = {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  action: () => Promise<void> | void;
-};
+const ArrowIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d7dae3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+)
+
+type Command = {
+  id: string
+  label: string
+  group: string
+  bg: string
+  color: string
+  href?: string
+  action?: 'openDrawer' | 'openCapture'
+  toast?: string
+  iconPath?: string
+}
+
+const BASE_COMMANDS: Command[] = [
+  { id: 'c0', label: 'View Daily Briefing', group: 'Navigate', bg: '#efe9f5', color: '#4a2d6e', href: '/briefing', iconPath: 'M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z' },
+  { id: 'c1', label: 'Go to Home', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/dashboard', iconPath: 'M3 10.5 12 4l9 6.5M5 9.5V20h14V9.5' },
+  { id: 'c2', label: 'Go to Today', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/today', iconPath: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM12 2v2M12 20v2' },
+  { id: 'c3', label: 'Open Inbox', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/inbox', iconPath: 'M4 13h4l1.6 3h4.8L20 13M4 13 6.2 5h11.6L20 13v6H4z' },
+  { id: 'c4', label: 'View Projects', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/projects', iconPath: 'M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z' },
+  { id: 'c5', label: 'Open Calendar', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/calendar', iconPath: 'M3 9.5h18M8 3v4M16 3v4M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z' },
+  { id: 'c5b', label: 'Review Goals', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/goals', iconPath: 'M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z' },
+  { id: 'c5c', label: 'Open People', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/people', iconPath: 'M9 8a3 3 0 1 0 0-.01M3 19a6 6 0 0 1 12 0M16 6a3 3 0 0 1 0 6' },
+  { id: 'c5d', label: 'Open Settings', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/settings', iconPath: 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1' },
+  { id: 'c5e', label: 'Open Apple Health', group: 'Navigate', bg: '#fdeee6', color: '#b84a1f', href: '/health', iconPath: 'M3 12h3l2-5 3 10 2-7 1.5 2H21' },
+  { id: 'c5f', label: 'Open Notes', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/notes', iconPath: 'M5 4h11l3 3v13H5z' },
+  { id: 'c5g', label: 'Open Weekly Review', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/review', iconPath: 'M9 11l3 3 7-7M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10' },
+  { id: 'c5h', label: 'Open Habits', group: 'Navigate', bg: '#fdeee6', color: '#b84a1f', href: '/habits', iconPath: 'M17 2l4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3' },
+  { id: 'c5j', label: 'Open Saved Views', group: 'Navigate', bg: '#e9f6f7', color: '#1d7a82', href: '/views', iconPath: 'M3 5h18M6 12h12M10 19h4' },
+  { id: 'c6', label: 'New task', group: 'Create', bg: '#fdeee6', color: '#b84a1f', action: 'openDrawer', iconPath: 'M12 5v14M5 12h14' },
+  { id: 'c8', label: 'Quick capture', group: 'Create', bg: '#efe9f5', color: '#4a2d6e', action: 'openCapture', iconPath: 'M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z' },
+  { id: 'a2', label: 'Snooze inbox to this evening', group: 'Quick actions', bg: '#fdf4e0', color: '#b17d1f', toast: 'Inbox snoozed to 6:00 PM', iconPath: 'M12 8v4l3 2M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z' },
+  { id: 'i1', label: 'Ask AI to plan my day', group: 'Intelligence', bg: '#efe9f5', color: '#4a2d6e', href: '/briefing', iconPath: 'M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z' },
+  { id: 'i2', label: 'Process inbox with AI', group: 'Intelligence', bg: '#efe9f5', color: '#4a2d6e', href: '/inbox', iconPath: 'M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z' },
+]
+
+function CommandIcon({ path, bg, color }: { path?: string; bg: string; color: string }) {
+  return (
+    <div style={{
+      width: 32, height: 32, borderRadius: 9,
+      background: bg, color,
+      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+    }}>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+        <path d={path ?? 'M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z'} />
+      </svg>
+    </div>
+  )
+}
 
 export function CommandPalette() {
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const [isRunning, setIsRunning] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { paletteOpen, closePalette, openPalette, openDrawer, openCapture, showToast } = useApp()
+  const [query, setQuery] = useState('')
+  const router = useRouter()
 
-  async function createTask() {
-    const title = query.trim() || "Untitled task";
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName
+      const typing = tag === 'INPUT' || tag === 'TEXTAREA'
 
-    const response = await fetch("/api/os-command", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        type: "TASK_CREATE",
-        payload: {
-          title,
-          status: "inbox",
-        },
-        meta: {
-          source: "command-palette",
-        },
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.ok) {
-      throw new Error(result.error ?? "Failed to create task");
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        if (paletteOpen) {
+          closePalette()
+        } else {
+          openPalette()
+        }
+        return
+      }
+      if (e.key === 'Escape' && paletteOpen) {
+        closePalette()
+        setQuery('')
+        return
+      }
+      if (e.key.toLowerCase() === 'c' && !e.metaKey && !e.ctrlKey && !e.altKey && !typing && !paletteOpen) {
+        e.preventDefault()
+        openCapture()
+      }
     }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [paletteOpen, closePalette, openPalette, openCapture])
 
-    setSuccessMessage(`Created task: ${title}`);
+  useEffect(() => {
+    if (paletteOpen) {
+      setQuery('')
+      setTimeout(() => {
+        document.getElementById('cmd-palette-input')?.focus()
+      }, 30)
+    }
+  }, [paletteOpen])
+
+  if (!paletteOpen) return null
+
+  const q = query.trim().toLowerCase()
+  let commands = q
+    ? BASE_COMMANDS.filter(c => (c.label + ' ' + c.group).toLowerCase().includes(q))
+    : BASE_COMMANDS
+
+  if (q) {
+    commands = [
+      {
+        id: 'create-dynamic',
+        label: `Create task “${query.trim()}”`,
+        group: 'Create new',
+        bg: '#fdeee6',
+        color: '#b84a1f',
+        action: 'openDrawer',
+        iconPath: 'M12 5v14M5 12h14',
+      },
+      ...commands,
+    ]
   }
 
-  const commands: CommandItem[] = useMemo(
-    () => [
-      {
-        id: "create-task",
-        title: query.trim() ? `Create task "${query.trim()}"` : "Create task",
-        description: "Capture a new task into your inbox",
-        icon: CheckCircle2,
-        action: createTask,
-      },
-      {
-        id: "open-inbox",
-        title: "Open inbox",
-        description: "Review captured items and loose notes",
-        icon: Inbox,
-        action: () => {
-          window.location.href = "/inbox";
-        },
-      },
-      {
-        id: "open-today",
-        title: "Open today",
-        description: "See what needs attention now",
-        icon: Sparkles,
-        action: () => {
-          window.location.href = "/today";
-        },
-      },
-      {
-        id: "open-projects",
-        title: "Open projects",
-        description: "Review active outcomes and open loops",
-        icon: FolderKanban,
-        action: () => {
-          window.location.href = "/projects";
-        },
-      },
-      {
-        id: "open-calendar",
-        title: "Open calendar",
-        description: "See your schedule and commitments",
-        icon: CalendarDays,
-        action: () => {
-          window.location.href = "/calendar";
-        },
-      },
-      {
-        id: "ask-ai",
-        title: query.trim() ? `Ask AI about "${query.trim()}"` : "Ask AI",
-        description: "Use the AI layer to reason across your life system",
-        icon: Bot,
-        action: () => {
-          setSuccessMessage("AI command center coming next.");
-        },
-      },
-    ],
-    [query]
-  );
-
-  const filteredCommands = commands.filter((command) => {
-    const searchText = `${command.title} ${command.description}`.toLowerCase();
-    return searchText.includes(query.toLowerCase()) || command.id === "create-task";
-  });
-
-  async function runCommand(command: CommandItem) {
-    try {
-      setIsRunning(true);
-      await command.action();
-
-      if (command.id !== "ask-ai") {
-        setTimeout(() => {
-          setOpen(false);
-          setQuery("");
-          setSuccessMessage(null);
-        }, 450);
-      }
-    } catch (error) {
-      console.error(error);
-      setSuccessMessage("Command failed. Check the console.");
-    } finally {
-      setIsRunning(false);
+  function runCommand(cmd: Command) {
+    if (cmd.action === 'openDrawer') {
+      const prefill = cmd.id === 'create-dynamic' ? { title: query.trim() } : {}
+      openDrawer(prefill)
+      setQuery('')
+    } else if (cmd.action === 'openCapture') {
+      openCapture()
+      closePalette()
+      setQuery('')
+    } else if (cmd.toast) {
+      showToast(cmd.toast)
+      closePalette()
+      setQuery('')
+    } else if (cmd.href) {
+      router.push(cmd.href)
+      closePalette()
+      setQuery('')
     }
   }
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setOpen((value) => !value);
-      }
-
-      if (event.key === "Escape") {
-        setOpen(false);
-        setQuery("");
-        setSuccessMessage(null);
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const timer = window.setTimeout(() => {
-      document.getElementById("command-palette-input")?.focus();
-    }, 50);
-
-    return () => window.clearTimeout(timer);
-  }, [open]);
-
-  if (!open) return null;
+  const hasResults = commands.length > 0
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/70 px-4 pt-24 backdrop-blur-xl">
-      <style>
-        {`
-          @keyframes command-rise {
-            from { opacity: 0; transform: translateY(18px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-
-          @keyframes command-glow {
-            0%, 100% { opacity: 0.45; transform: scale(1); }
-            50% { opacity: 0.8; transform: scale(1.08); }
-          }
-
-          .command-rise {
-            animation: command-rise 180ms ease-out both;
-          }
-
-          .command-glow {
-            animation: command-glow 4s ease-in-out infinite;
-          }
-        `}
-      </style>
-
-      <div className="command-rise relative w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/10 bg-slate-950 text-white shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(99,102,241,0.35),transparent_32%),radial-gradient(circle_at_90%_10%,rgba(6,182,212,0.22),transparent_28%)]" />
-        <div className="command-glow pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/30 blur-3xl" />
-
-        <div className="relative border-b border-white/10 p-4">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-xl">
-            <Search className="size-5 text-slate-400" />
+    <>
+      <style>{`
+        @keyframes ml-pop {
+          from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .ml-pop { animation: ml-pop 200ms ease-out both; }
+        .ml-scroll { scrollbar-width: thin; scrollbar-color: #d7dae3 transparent; }
+        .cmd-item:hover { background: #faf7f1; }
+      `}</style>
+      <div
+        onClick={closePalette}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 50,
+          background: 'rgba(15,16,20,0.4)',
+          backdropFilter: 'blur(3px)',
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          paddingTop: '14vh',
+        }}
+      >
+        <div
+          onClick={e => e.stopPropagation()}
+          className="ml-pop"
+          style={{
+            width: 580, maxWidth: '92vw',
+            background: '#ffffff',
+            border: '1px solid #d7dae3',
+            borderRadius: 18,
+            boxShadow: '0 30px 70px -25px rgba(15,16,20,0.5)',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '16px 20px',
+            borderBottom: '1px solid #eceef3',
+          }}>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#674197" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3l1.8 4.8L18 9l-4.2 1.2L12 15l-1.8-4.8L6 9z" />
+            </svg>
             <input
-              id="command-palette-input"
-              className="h-9 flex-1 bg-transparent text-base text-white outline-none placeholder:text-slate-500"
-              placeholder="Create a task, open a page, or ask AI..."
+              id="cmd-palette-input"
+              autoFocus
               value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setSuccessMessage(null);
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && filteredCommands[0]) {
-                  event.preventDefault();
-                  runCommand(filteredCommands[0]);
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && commands[0]) {
+                  e.preventDefault()
+                  runCommand(commands[0])
                 }
               }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setOpen(false);
-                setQuery("");
-                setSuccessMessage(null);
+              placeholder="Type a command or search…"
+              style={{
+                flex: 1, border: 'none', outline: 'none',
+                background: 'transparent',
+                fontFamily: 'inherit', fontSize: 15.5, color: '#15171d',
               }}
-              className="rounded-xl p-2 text-slate-400 transition hover:bg-white/10 hover:text-white"
-            >
-              <X className="size-4" />
-            </button>
+            />
+            <kbd style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 11,
+              background: '#f5f6f9',
+              border: '1px solid #d7dae3',
+              borderRadius: 5,
+              padding: '2px 6px',
+              color: '#80859a',
+            }}>esc</kbd>
           </div>
-        </div>
 
-        <div className="relative max-h-[460px] overflow-y-auto p-3">
-          {successMessage && (
-            <div className="mb-3 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
-              {successMessage}
-            </div>
-          )}
-
-          <div className="space-y-2">
-            {filteredCommands.map((command, index) => (
-              <button
-                key={command.id}
-                type="button"
-                disabled={isRunning}
-                onClick={() => runCommand(command)}
-                className="group flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-white/10 disabled:opacity-60"
-              >
-                <div className="flex size-10 items-center justify-center rounded-2xl bg-white/10 text-indigo-300 transition group-hover:bg-indigo-500 group-hover:text-white">
-                  {isRunning && index === 0 ? (
-                    <Loader2 className="size-5 animate-spin" />
-                  ) : (
-                    <command.icon className="size-5" />
-                  )}
+          {/* Results */}
+          <div
+            className="ml-scroll"
+            style={{ maxHeight: 360, overflowY: 'auto', padding: 8 }}
+          >
+            {hasResults ? (
+              commands.map(cmd => (
+                <div
+                  key={cmd.id}
+                  className="cmd-item"
+                  onClick={() => runCommand(cmd)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 13,
+                    padding: '11px 13px',
+                    borderRadius: 11,
+                    cursor: 'pointer',
+                    transition: 'background 120ms',
+                  }}
+                >
+                  <CommandIcon path={cmd.iconPath} bg={cmd.bg} color={cmd.color} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 500, color: '#15171d' }}>{cmd.label}</div>
+                    <div style={{ fontSize: 12, color: '#80859a' }}>{cmd.group}</div>
+                  </div>
+                  <ArrowIcon />
                 </div>
-
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-white">
-                    {command.title}
-                  </p>
-                  <p className="truncate text-xs text-slate-500">
-                    {command.description}
-                  </p>
-                </div>
-
-                <div className="hidden rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold text-slate-500 group-hover:block">
-                  Enter
-                </div>
-              </button>
-            ))}
+              ))
+            ) : (
+              <div style={{ padding: 32, textAlign: 'center', color: '#80859a', fontSize: 13.5 }}>
+                No matches. Try &ldquo;new task&rdquo; or &ldquo;calendar&rdquo;.
+              </div>
+            )}
           </div>
-        </div>
-
-        <div className="relative flex items-center justify-between border-t border-white/10 px-4 py-3 text-xs text-slate-500">
-          <span>Type anything to create a task.</span>
-          <span>Esc to close</span>
         </div>
       </div>
-    </div>
-  );
+    </>
+  )
 }

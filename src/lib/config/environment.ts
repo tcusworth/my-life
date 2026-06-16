@@ -5,6 +5,10 @@ export const env = {
   openaiApiKey: process.env.OPENAI_API_KEY ?? "",
   openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
   nodeEnv: process.env.NODE_ENV ?? "development",
+  googleClientId: process.env.GOOGLE_CLIENT_ID ?? "",
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+  microsoftClientId: process.env.MICROSOFT_CLIENT_ID ?? "",
+  microsoftClientSecret: process.env.MICROSOFT_CLIENT_SECRET ?? "",
 } as const;
 
 export function isOpenAiConfigured() {

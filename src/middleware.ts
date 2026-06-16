@@ -5,6 +5,12 @@ import { AUTH_COOKIE_NAME, POCKETBASE_URL } from "@/lib/pocketbase/config";
 const publicPaths = ["/login"];
 
 export async function middleware(request: NextRequest) {
+  if (process.env.SKIP_AUTH === "true") {
+    const { pathname } = request.nextUrl;
+    if (pathname === "/" || pathname === "/login") return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 

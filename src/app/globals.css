@@ -6,8 +6,9 @@
 /* ─── Design tokens ─────────────────────────────────────────────────────── */
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-serif: var(--font-fraunces);
 
   /* 8pt spacing scale */
   --spacing-0: 0;
@@ -95,49 +96,68 @@
 }
 
 :root {
+  /* ─── Warm editorial theme ──────────────────────────────────────────────── */
+  --ml-bg: #faf7f1;
+  --ml-sidebar: #ffffff;
+  --ml-border: #d7dae3;
+  --ml-teal: #29a8b2;
+  --ml-orange: #eb6532;
+  --ml-amber: #f0ae35;
+  --ml-purple: #674197;
+  --ml-ink: #15171d;
+  --ml-muted: #80859a;
+  --ml-subtle: #b3b7c6;
+
   /* Surface hierarchy */
-  --surface-page-bg: #f5f5f7;
+  --surface-page-bg: #faf7f1;
   --surface-card-bg: #ffffff;
-  --surface-card-border: #e5e5e7;
+  --surface-card-border: #d7dae3;
   --surface-panel-bg: #ffffff;
-  --surface-panel-border: #d8d8dc;
+  --surface-panel-border: #d7dae3;
   --surface-floating-bg: rgb(255 255 255 / 0.88);
   --surface-floating-border: rgb(0 0 0 / 0.07);
 
   --background: var(--surface-page-bg);
-  --foreground: #171717;
+  --foreground: #15171d;
   --surface: var(--surface-card-bg);
   --surface-raised: var(--surface-panel-bg);
   --card: var(--surface-card-bg);
-  --card-foreground: #171717;
+  --card-foreground: #15171d;
   --popover: var(--surface-floating-bg);
-  --popover-foreground: #171717;
-  --primary: #171717;
-  --primary-foreground: #fafafa;
-  --secondary: #ececee;
-  --secondary-foreground: #404040;
-  --muted: #ececee;
-  --muted-foreground: #737373;
-  --accent: #ececee;
-  --accent-foreground: #171717;
+  --popover-foreground: #15171d;
+  --primary: #0f1014;
+  --primary-foreground: #faf7f1;
+  --secondary: #eceef3;
+  --secondary-foreground: #2c2f3a;
+  --muted: #eceef3;
+  --muted-foreground: #80859a;
+  --accent: #e9f6f7;
+  --accent-foreground: #1d7a82;
   --destructive: #dc2626;
-  --border: #e5e5e7;
-  --border-subtle: #efeff1;
-  --input: #e5e5e7;
-  --ring: #a3a3a3;
+  --border: #d7dae3;
+  --border-subtle: #eceef3;
+  --input: #d7dae3;
+  --ring: #29a8b2;
 
-  --sidebar: #f0f0f2;
-  --sidebar-foreground: #525252;
-  --sidebar-border: #e5e5e7;
-  --sidebar-accent: #e8e8eb;
-  --sidebar-accent-foreground: #171717;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #2c2f3a;
+  --sidebar-border: #d7dae3;
+  --sidebar-accent: #e9f6f7;
+  --sidebar-accent-foreground: #1d7a82;
 
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-panel: 0 2px 6px rgb(0 0 0 / 0.05), 0 1px 2px rgb(0 0 0 / 0.04);
-  --shadow-floating: 0 8px 24px rgb(0 0 0 / 0.1), 0 2px 8px rgb(0 0 0 / 0.05);
+  --shadow-card: 0 1px 2px rgb(15 16 20 / 0.05);
+  --shadow-panel: 0 2px 6px rgb(15 16 20 / 0.05), 0 1px 2px rgb(15 16 20 / 0.04);
+  --shadow-floating: 0 8px 24px rgb(15 16 20 / 0.1), 0 2px 8px rgb(15 16 20 / 0.05);
 }
 
 .dark {
+  --ml-bg: #0f1014;
+  --ml-sidebar: #15171d;
+  --ml-border: #2a2c35;
+  --ml-ink: #eceef3;
+  --ml-muted: #80859a;
+  --ml-subtle: #4a4e5e;
+
   --surface-page-bg: #0a0a0a;
   --surface-card-bg: #141414;
   --surface-card-border: #2a2a2a;
@@ -179,6 +199,33 @@
   --shadow-floating: 0 12px 32px rgb(0 0 0 / 0.45), 0 4px 12px rgb(0 0 0 / 0.25);
 }
 
+/* ─── Keyframe animations ───────────────────────────────────────────────── */
+
+@keyframes ml-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ml-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
+}
+
+@keyframes ml-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes ml-slide {
+  from { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes ml-toast {
+  from { transform: translate(-50%, 12px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
 /* ─── Base ──────────────────────────────────────────────────────────────── */
 
 @layer base {
@@ -197,6 +244,10 @@
     font-size: var(--text-body);
     line-height: var(--text-body--line-height);
     font-weight: var(--text-body--font-weight);
+  }
+
+  ::selection {
+    background: #fad2bf;
   }
 }
 
@@ -250,6 +301,25 @@
     color: var(--muted-foreground);
   }
 
+  /* ─── Scrollbar ─────────────────────────────────────────────────────────── */
+
+  .ml-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .ml-scroll::-webkit-scrollbar-thumb {
+    background: #d7dae3;
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  .ml-scroll::-webkit-scrollbar-thumb:hover {
+    background: #b3b7c6;
+    background-clip: content-box;
+  }
+
   /* ─── Surface hierarchy (usage policy) ────────────────────────────────────
    *
    * PageShell (surface-page via app layout)
@@ -295,26 +365,16 @@
    * ─────────────────────────────────────────────────────────────────────── */
 
   .surface-page {
-      background:
-        radial-gradient(
-          circle at top left,
-       rgba(99,102,241,0.08),
-        transparent 35%
-    ),
-    #f8fafc;
-}
+    background-color: var(--ml-bg);
+  }
 
   .surface-card {
-    background: rgba(255,255,255,0.92);
-    border: 1px solid rgba(15,23,42,0.06);
+    background: #ffffff;
+    border: 1px solid #d7dae3;
     border-radius: 16px;
-    box-shadow:
-      0 1px 2px rgba(15,23,42,0.04),
-     0 8px 24px rgba(15,23,42,0.06);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 1px 2px rgba(15, 16, 20, 0.05);
     padding: var(--spacing-card);
-}
+  }
 
   .surface-panel {
     background-color: var(--surface-panel-bg);

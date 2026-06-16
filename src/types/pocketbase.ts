@@ -11,7 +11,8 @@ export type ActivityType =
   | "message"
   | "note"
   | "follow_up";
-export type CalendarSourceType = "eventkit" | "internal";
+export type CalendarSourceType = "eventkit" | "internal" | "google" | "microsoft";
+export type OAuthProvider = "google" | "microsoft";
 export type CalendarWriteOperation = "create" | "update" | "delete";
 export type PendingWriteStatus = "pending" | "processing" | "completed" | "failed";
 export type SyncDirection = "inbound" | "outbound";
@@ -192,6 +193,16 @@ export interface SyncLog extends BaseRecord {
   metadata?: Record<string, unknown>;
 }
 
+export interface OAuthConnection extends BaseRecord {
+  user: string;
+  provider: OAuthProvider;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+  providerEmail: string;
+  scopes: string;
+}
+
 export type CollectionRecords = {
   users: User;
   areas: Area;
@@ -208,6 +219,7 @@ export type CollectionRecords = {
   time_blocks: TimeBlock;
   pending_calendar_writes: PendingCalendarWrite;
   sync_logs: SyncLog;
+  oauth_connections: OAuthConnection;
 };
 
 export type TypedPocketBase = PocketBase & {
