@@ -1,30 +1,19 @@
-import { redirect } from "next/navigation";
+import { NextResponse, type NextRequest } from "next/server";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import { deleteOAuthConnection } from "@/lib/sync/oauth-connections";
 import { escapeFilterValue } from "@/lib/pocketbase/admin";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const pb = await getAuthenticatedClient();
-  if (!pb) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!pb) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const userId = pb.authStore.model?.id as string;
-
   await deleteOAuthConnection(pb, userId, "google");
 
-  const filter = [
-    `user = "${escapeFilterValue(userId)}"`,
-    `sourceType = "google"`,
-  ].join(" && ");
+  const sources = await pb.collection("calendar_sources").getFullList({
+    filter: `user = "${escapeFilterValue(userId)}" && sourceType = "google"`,
+  });
+  for (const source of sources) await pb.collection("calendar_sources").delete(source.id);
 
-  const sources = await pb
-    .collection("calendar_sources")
-    .getFullList({ filter });
-
-  for (const source of sources) {
-    await pb.collection("calendar_sources").delete(source.id);
-  }
-
-  redirect("/settings");
+  return NextResponse.redirect(new URL("/settings", request.url));
 }

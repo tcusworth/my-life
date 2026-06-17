@@ -1,6 +1,7 @@
 import { startOfWeek, endOfWeek, differenceInMinutes, getDay } from "date-fns";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import type { CalendarEvent } from "@/types/pocketbase";
+import SyncOnMount from "@/components/SyncOnMount";
 
 const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const hours = ["7 AM", "8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM", "5 PM", "6 PM", "7 PM", "8 PM"];
@@ -120,6 +121,7 @@ export default async function CalendarPage() {
 
   return (
     <div style={{ padding: "28px 32px", maxWidth: 1320, margin: "0 auto" }}>
+      <SyncOnMount />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
         <div>
           <h1 style={{ fontFamily: "'Fraunces', serif", fontSize: 30, fontWeight: 500, letterSpacing: "-0.02em", color: "#0f1014", margin: 0 }}>

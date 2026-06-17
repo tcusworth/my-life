@@ -24,7 +24,6 @@ export async function POST() {
   const timeMax = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
 
   const calendars = await fetchGoogleCalendars(accessToken);
-
   let totalEvents = 0;
 
   for (const cal of calendars) {
@@ -48,11 +47,8 @@ export async function POST() {
     };
 
     let calendarSourceId: string;
-
     if (existingSources.items[0]) {
-      const updated = await pb
-        .collection("calendar_sources")
-        .update(existingSources.items[0].id, sourceBody);
+      const updated = await pb.collection("calendar_sources").update(existingSources.items[0].id, sourceBody);
       calendarSourceId = updated.id;
     } else {
       const created = await pb.collection("calendar_sources").create(sourceBody);
@@ -88,19 +84,16 @@ export async function POST() {
         calendarSource: calendarSourceId,
         externalId: ev.id,
         title: ev.summary ?? "(No title)",
-        description: ev.description ?? "",
-        location: ev.location ?? "",
+        description: (ev.description ?? "").slice(0, 5000),
+        location: (ev.location ?? "").slice(0, 1000),
         startsAt,
         endsAt,
         isAllDay,
         lastSyncedAt: new Date().toISOString(),
-        deletedAt: "",
       };
 
       if (existingEvents.items[0]) {
-        await pb
-          .collection("calendar_events")
-          .update(existingEvents.items[0].id, eventBody);
+        await pb.collection("calendar_events").update(existingEvents.items[0].id, eventBody);
       } else {
         await pb.collection("calendar_events").create(eventBody);
       }

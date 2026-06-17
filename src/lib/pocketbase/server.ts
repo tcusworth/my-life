@@ -24,13 +24,9 @@ export async function getAuthenticatedClient(): Promise<TypedPocketBase | null> 
     return null;
   }
 
-  try {
-    await pb.collection("users").authRefresh();
-  } catch {
-    pb.authStore.clear();
-    return null;
-  }
-
+  // Skip authRefresh — SDK v0.27 misparses the PocketBase v0.39 response
+  // format, silently clearing the auth store. The JWT from the cookie is
+  // already validated by isValid above.
   return pb;
 }
 

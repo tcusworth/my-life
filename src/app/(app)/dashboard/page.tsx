@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import SyncOnMount from "@/components/SyncOnMount";
 
 const stats = [
   { label: "Inbox", value: 6, helper: "Items to triage", color: "#eb6532", soft: "#fdeee6" },
@@ -52,6 +53,7 @@ export default function DashboardPage() {
 
   return (
     <>
+      <SyncOnMount />
       <style>{`
         @keyframes ml-rise {
           from { opacity: 0; transform: translateY(16px); }

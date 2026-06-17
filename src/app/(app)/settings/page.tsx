@@ -11,7 +11,6 @@ interface ConnectionStatus {
 
 interface ConnectionsState {
   google: ConnectionStatus;
-  microsoft: ConnectionStatus;
 }
 
 const settingsTabs: { key: TabKey; label: string; iconPath: string }[] = [
@@ -70,7 +69,6 @@ export default function SettingsPage() {
   const [toast, setToast] = useState<string | null>(null);
   const [connections, setConnections] = useState<ConnectionsState>({
     google: { connected: false },
-    microsoft: { connected: false },
   });
   const [syncing, setSyncing] = useState<Record<string, boolean>>({});
 
@@ -94,14 +92,14 @@ export default function SettingsPage() {
     setSourceOn((prev) => ({ ...prev, [i]: !prev[i] }));
   };
 
-  const handleSync = async (providerKey: "google" | "microsoft") => {
+  const handleSync = async (providerKey: "google") => {
     setSyncing((s) => ({ ...s, [providerKey]: true }));
     try {
-      const endpoint = providerKey === "google" ? "/api/sync/google-calendar" : "/api/sync/outlook";
+      const endpoint = "/api/sync/google-calendar";
       const res = await fetch(endpoint, { method: "POST" });
       const data = await res.json();
       if (res.ok) {
-        showToast(`Synced ${data.synced?.events ?? 0} events from ${providerKey === "google" ? "Google" : "Outlook"}`);
+        showToast(`Synced ${data.synced?.events ?? 0} events from Google Calendar`);
       } else {
         showToast("Sync failed. Try again.");
       }
@@ -112,11 +110,11 @@ export default function SettingsPage() {
     }
   };
 
-  const handleDisconnect = async (providerKey: "google" | "microsoft") => {
-    const endpoint = providerKey === "google" ? "/api/auth/google/disconnect" : "/api/auth/microsoft/disconnect";
+  const handleDisconnect = async (providerKey: "google") => {
+    const endpoint = "/api/auth/google/disconnect";
     await fetch(endpoint, { method: "POST" });
     setConnections((c) => ({ ...c, [providerKey]: { connected: false } }));
-    showToast(`${providerKey === "google" ? "Google Calendar" : "Microsoft Outlook"} disconnected`);
+    showToast("Google Calendar disconnected");
   };
 
   const apiKeyDisplay = showKey ? "sk-ant-api03-7f3c9a2b8e1d4f6a0c5b9e2d3a" : "•".repeat(28);
@@ -211,7 +209,7 @@ export default function SettingsPage() {
               <div style={{ background: "#ffffff", border: "1px solid #d7dae3", borderRadius: 16, boxShadow: "0 1px 2px rgba(15,16,20,0.05)", padding: 24 }}>
                 <div style={{ marginBottom: 18 }}>
                   <h3 style={{ fontFamily: "'Fraunces', serif", fontSize: 18, fontWeight: 600, color: "#0f1014", margin: 0 }}>Calendar connections</h3>
-                  <p style={{ fontSize: 13, color: "#80859a", margin: "5px 0 0" }}>Connect Google or Outlook to sync events directly.</p>
+                  <p style={{ fontSize: 13, color: "#80859a", margin: "5px 0 0" }}>Connect Google to sync events.</p>
                 </div>
                 <div style={{ display: "flex", gap: 14 }}>
                   {/* Google Calendar card */}
@@ -268,64 +266,6 @@ export default function SettingsPage() {
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
                           Connect Google
-                        </a>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Microsoft Outlook card */}
-                  <div style={providerCardStyle}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 11, background: "#fff", border: "1px solid #e8eaed", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                          <rect x="2" y="2" width="9.5" height="9.5" fill="#F25022" />
-                          <rect x="12.5" y="2" width="9.5" height="9.5" fill="#7FBA00" />
-                          <rect x="2" y="12.5" width="9.5" height="9.5" fill="#00A4EF" />
-                          <rect x="12.5" y="12.5" width="9.5" height="9.5" fill="#FFB900" />
-                        </svg>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, color: "#0f1014" }}>Microsoft Outlook</div>
-                        {connections.microsoft.connected && connections.microsoft.email && (
-                          <div style={{ fontSize: 12, color: "#80859a", marginTop: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{connections.microsoft.email}</div>
-                        )}
-                      </div>
-                      {connections.microsoft.connected ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11.5, fontWeight: 600, color: "#2f8f5e", background: "#e7f3ec", padding: "4px 10px", borderRadius: 999, flexShrink: 0 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: 999, background: "#2f8f5e" }} />
-                          Connected
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: 11.5, fontWeight: 600, color: "#b3b7c6", background: "#f5f6f9", padding: "4px 10px", borderRadius: 999, flexShrink: 0 }}>
-                          Not connected
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      {connections.microsoft.connected ? (
-                        <>
-                          <button
-                            onClick={() => handleSync("microsoft")}
-                            disabled={syncing.microsoft}
-                            style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 14px", borderRadius: 9, border: "none", background: "#0f1014", color: "#faf7f1", fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: syncing.microsoft ? "default" : "pointer", opacity: syncing.microsoft ? 0.7 : 1 }}
-                          >
-                            {syncing.microsoft ? <Spinner /> : null}
-                            {syncing.microsoft ? "Syncing…" : "Sync now"}
-                          </button>
-                          <button
-                            onClick={() => handleDisconnect("microsoft")}
-                            style={{ padding: "9px 14px", borderRadius: 9, border: "1px solid #f3c9c5", background: "#fff", color: "#c94339", fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-                          >
-                            Disconnect
-                          </button>
-                        </>
-                      ) : (
-                        <a
-                          href="/api/auth/microsoft"
-                          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "9px 14px", borderRadius: 9, border: "1px solid #d7dae3", background: "#fff", color: "#2c2f3a", fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer", textDecoration: "none" }}
-                        >
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                          Connect Outlook
                         </a>
                       )}
                     </div>

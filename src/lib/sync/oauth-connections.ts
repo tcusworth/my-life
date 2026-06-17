@@ -1,5 +1,4 @@
 import { env } from "@/lib/config/environment";
-import { escapeFilterValue } from "@/lib/pocketbase/admin";
 import type { OAuthConnection, OAuthProvider, TypedPocketBase } from "@/types/pocketbase";
 
 export async function getOAuthConnection(
@@ -7,13 +6,15 @@ export async function getOAuthConnection(
   userId: string,
   provider: OAuthProvider
 ): Promise<OAuthConnection | null> {
-  const filter = [
-    `user = "${escapeFilterValue(userId)}"`,
-    `provider = "${provider}"`,
-  ].join(" && ");
-
-  const result = await pb.collection("oauth_connections").getList(1, 1, { filter });
-  return (result.items[0] as unknown as OAuthConnection) ?? null;
+  // Filter only by provider (plain text) — filtering on the `user` Relation field
+  // triggers "Missing collection context" in PocketBase v0.39.4, so match user in JS.
+  const result = await pb.collection("oauth_connections").getList(1, 50, {
+    filter: `provider = "${provider}"`,
+  });
+  const match = result.items.find(
+    (r) => (r as unknown as OAuthConnection).user === userId
+  );
+  return (match as unknown as OAuthConnection) ?? null;
 }
 
 export async function upsertOAuthConnection(
