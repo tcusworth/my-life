@@ -78,6 +78,8 @@
         "maxSelect": 1,
         "values": [
           "eventkit",
+          "google",
+          "microsoft",
           "internal"
         ]
       }
