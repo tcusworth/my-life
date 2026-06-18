@@ -6,15 +6,14 @@ export async function getOAuthConnection(
   userId: string,
   provider: OAuthProvider
 ): Promise<OAuthConnection | null> {
-  // Filter only by provider (plain text) — filtering on the `user` Relation field
-  // triggers "Missing collection context" in PocketBase v0.39.4, so match user in JS.
-  const result = await pb.collection("oauth_connections").getList(1, 50, {
-    filter: `provider = "${provider}"`,
-  });
-  const match = result.items.find(
-    (r) => (r as unknown as OAuthConnection).user === userId
-  );
-  return (match as unknown as OAuthConnection) ?? null;
+  try {
+    const record = await pb.collection("oauth_connections").getFirstListItem(
+      `provider = "${provider}" && user = "${userId}"`
+    );
+    return record as unknown as OAuthConnection;
+  } catch {
+    return null;
+  }
 }
 
 export async function upsertOAuthConnection(

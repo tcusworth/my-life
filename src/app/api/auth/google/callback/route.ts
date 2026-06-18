@@ -44,11 +44,25 @@ export async function GET(request: NextRequest) {
 
   try {
     const admin = await getAdminClient();
+
+    // Find existing connection to preserve refresh token if Google doesn't return a new one
+    let existingRefreshToken = "";
+    try {
+      const existing = await admin.collection("oauth_connections").getFirstListItem(
+        `provider = "google" && user = "${userId}"`
+      );
+      existingRefreshToken = (existing as any).refreshToken ?? "";
+    } catch {
+      // No existing record — first connection
+    }
+
+    const refreshToken = tokenData.refresh_token || existingRefreshToken;
+
     await upsertOAuthConnection(admin, {
       user: userId,
       provider: "google",
       accessToken: tokenData.access_token ?? "",
-      refreshToken: tokenData.refresh_token ?? "",
+      refreshToken,
       expiresAt: new Date(Date.now() + (tokenData.expires_in ?? 3600) * 1000).toISOString(),
       providerEmail: userInfo.email ?? "",
       scopes: tokenData.scope ?? "",
