@@ -4,6 +4,7 @@ export type ProjectStatus = "active" | "archived";
 export type GoalStatus = "active" | "completed" | "on_hold";
 export type TaskStatus = "inbox" | "active" | "completed" | "cancelled" | "someday";
 export type TaskPriority = "low" | "medium" | "high" | "urgent";
+export type RecurrenceRule = "none" | "daily" | "weekly" | "biweekly" | "monthly";
 export type ActivityType =
   | "call"
   | "email"
@@ -127,6 +128,8 @@ export interface Task extends BaseRecord {
   completedAt?: string;
   followUpAt?: string;
   sortOrder?: number;
+  parentTask?: string;
+  recurrenceRule?: RecurrenceRule;
   expand?: {
     project?: Project;
     contact?: Contact;

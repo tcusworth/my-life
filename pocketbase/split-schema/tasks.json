@@ -142,6 +142,30 @@
         "presentable": false,
         "system": false,
         "hidden": false
+      },
+      {
+        "id": "tsk_parent01",
+        "name": "parentTask",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_tasks00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_recur01",
+        "name": "recurrenceRule",
+        "type": "select",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": ["none", "daily", "weekly", "biweekly", "monthly"]
       }
     ],
     "indexes": [

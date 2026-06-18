@@ -13,6 +13,8 @@ export async function POST(request: Request) {
     status: body.status ?? "inbox",
     priority: body.priority,
     dueAt: body.dueAt,
+    recurrenceRule: body.recurrenceRule,
+    parentTask: body.parentTask,
   });
 
   return Response.json(task);
