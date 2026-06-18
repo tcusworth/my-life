@@ -40,20 +40,26 @@ export async function POST() {
 
       const sourceBody = {
         user: userId,
-        externalId: cal.id,
-        name: cal.summary,
-        color: cal.backgroundColor,
+        externalId: cal.id ?? "",
+        name: cal.summary ?? "Unnamed Calendar",
+        color: cal.backgroundColor ?? "",
         sourceType: "google" as CalendarSourceType,
         isEnabled: true,
       };
 
       let calendarSourceId: string;
-      if (existingSources.items[0]) {
-        const updated = await pb.collection("calendar_sources").update(existingSources.items[0].id, sourceBody);
-        calendarSourceId = updated.id;
-      } else {
-        const created = await pb.collection("calendar_sources").create(sourceBody);
-        calendarSourceId = created.id;
+      try {
+        if (existingSources.items[0]) {
+          const updated = await pb.collection("calendar_sources").update(existingSources.items[0].id, sourceBody);
+          calendarSourceId = updated.id;
+        } else {
+          const created = await pb.collection("calendar_sources").create(sourceBody);
+          calendarSourceId = created.id;
+        }
+      } catch (err) {
+        const e = err as any;
+        console.error("[google-calendar sync] calendar_sources upsert failed:", e?.data ?? e);
+        return Response.json({ error: String(err), field_errors: e?.data?.data ?? e?.data }, { status: 500 });
       }
 
       let events: Awaited<ReturnType<typeof fetchGoogleEvents>>;
@@ -68,6 +74,8 @@ export async function POST() {
 
         const startsAt = ev.start.dateTime ?? ev.start.date ?? "";
         const endsAt = ev.end.dateTime ?? ev.end.date ?? startsAt;
+        if (!startsAt || !endsAt) continue;
+
         const isAllDay = !ev.start.dateTime;
 
         const eventFilter = [
@@ -93,20 +101,25 @@ export async function POST() {
           lastSyncedAt: new Date().toISOString(),
         };
 
-        if (existingEvents.items[0]) {
-          await pb.collection("calendar_events").update(existingEvents.items[0].id, eventBody);
-        } else {
-          await pb.collection("calendar_events").create(eventBody);
+        try {
+          if (existingEvents.items[0]) {
+            await pb.collection("calendar_events").update(existingEvents.items[0].id, eventBody);
+          } else {
+            await pb.collection("calendar_events").create(eventBody);
+          }
+          totalEvents++;
+        } catch (err) {
+          const e = err as any;
+          console.error("[google-calendar sync] calendar_events upsert failed:", e?.data ?? e);
+          return Response.json({ error: String(err), field_errors: e?.data?.data ?? e?.data, eventBody }, { status: 500 });
         }
-
-        totalEvents++;
       }
     }
 
     return Response.json({ synced: { calendars: calendars.length, events: totalEvents } });
   } catch (err) {
     console.error("[google-calendar sync] unhandled error:", err);
-    const pbErr = err as { data?: unknown; status?: number; message?: string };
-    return Response.json({ error: String(err), data: pbErr?.data, status: pbErr?.status }, { status: 500 });
+    const e = err as any;
+    return Response.json({ error: String(err), field_errors: e?.data?.data ?? e?.data }, { status: 500 });
   }
 }
