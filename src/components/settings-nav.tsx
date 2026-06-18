@@ -15,15 +15,15 @@ export function SettingsNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex gap-1 border-b pb-4">
+    <nav className="flex gap-1 border-b border-border pb-4">
       {settingsLinks.map((link) => (
         <Link
           key={link.href}
           href={link.href}
           className={cn(
-            "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+            "rounded-md px-3 py-1.5 type-small font-medium transition-colors",
             pathname === link.href
-              ? "bg-primary text-primary-foreground"
+              ? "bg-foreground text-background"
               : "text-muted-foreground hover:bg-muted hover:text-foreground"
           )}
         >

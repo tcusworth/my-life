@@ -1,16 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { approveInboxItems, extractInboxText } from "./actions";
 import { InboxReviewPanel } from "./inbox-review-panel";
 import { InboxReadinessAlert } from "./inbox-readiness-alert";
@@ -82,17 +75,7 @@ export function AiInboxProcessor({ readiness }: AiInboxProcessorProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="size-4 text-primary" />
-          AI Inbox Processing
-        </CardTitle>
-        <CardDescription>
-          Paste unstructured notes, review extracted items, then create the records
-          you approve.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-[var(--spacing-card)]">
         <InboxReadinessAlert readiness={readiness} />
 
         {step === "input" && (
@@ -127,7 +110,7 @@ export function AiInboxProcessor({ readiness }: AiInboxProcessorProps) {
 
         {step === "done" && result && (
           <div className="space-y-4">
-            <div className="rounded-lg border bg-muted/40 p-4 text-sm">
+            <div className="surface-card surface-flush p-4 type-body">
               <p className="font-medium">Created from approved items</p>
               <ul className="mt-2 space-y-1 text-muted-foreground">
                 <li>{result.tasksCreated} tasks</li>

@@ -1,4 +1,3 @@
-import { UserRound } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -6,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Small } from "@/components/ui/typography";
 import { formatDateTime } from "@/lib/dates";
 import type { Activity, Contact, Task } from "@/types/pocketbase";
 
@@ -43,26 +43,23 @@ export function FollowUpsWidget({ tasks, contacts, activities }: FollowUpsWidget
     .slice(0, 5);
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <UserRound className="size-4 text-primary" />
-          Follow Ups
-        </CardTitle>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Follow ups</CardTitle>
         <CardDescription>People and reminders to reconnect with</CardDescription>
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No follow-ups scheduled.</p>
+          <Small className="text-muted-foreground">No follow-ups scheduled.</Small>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {items.map((item) => (
               <li key={item.id} className="space-y-1">
-                <p className="text-sm font-medium leading-snug">{item.title}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="type-h3 font-normal">{item.title}</p>
+                <Small className="text-muted-foreground">
                   {formatDateTime(item.when)}
                   {item.subtitle ? ` · ${item.subtitle}` : ""}
-                </p>
+                </Small>
               </li>
             ))}
           </ul>

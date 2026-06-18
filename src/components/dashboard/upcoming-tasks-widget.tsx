@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ListTodo } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Small } from "@/components/ui/typography";
 import { formatDate, formatDateTime } from "@/lib/dates";
 import type { Task } from "@/types/pocketbase";
 
@@ -17,40 +17,37 @@ interface UpcomingTasksWidgetProps {
 
 export function UpcomingTasksWidget({ tasks }: UpcomingTasksWidgetProps) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <ListTodo className="size-4 text-primary" />
-          Upcoming Tasks
-        </CardTitle>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Upcoming tasks</CardTitle>
         <CardDescription>Due or scheduled soon</CardDescription>
       </CardHeader>
       <CardContent>
         {tasks.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No upcoming tasks.</p>
+          <Small className="text-muted-foreground">No upcoming tasks.</Small>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {tasks.map((task) => (
               <li key={task.id} className="space-y-1">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium leading-snug">{task.title}</p>
+                  <p className="type-h3 font-normal">{task.title}</p>
                   <Badge variant="secondary">{task.status}</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <Small className="text-muted-foreground">
                   {task.dueAt
                     ? `Due ${formatDateTime(task.dueAt)}`
                     : task.scheduledFor
                       ? `Scheduled ${formatDate(task.scheduledFor)}`
                       : "No date"}
                   {task.expand?.project ? ` · ${task.expand.project.name}` : ""}
-                </p>
+                </Small>
               </li>
             ))}
           </ul>
         )}
         <Link
           href="/inbox"
-          className="mt-4 inline-block text-xs font-medium text-primary hover:underline"
+          className="type-small mt-4 inline-block text-foreground hover:underline"
         >
           Open inbox
         </Link>

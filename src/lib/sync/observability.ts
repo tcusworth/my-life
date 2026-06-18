@@ -94,9 +94,7 @@ export async function getDevicesWithSyncStats(): Promise<
   const pb = await getAuthenticatedClient();
   if (!pb) return [];
 
-  const devices = await pb.collection("devices").getFullList<Device>({
-    sort: "-created",
-  });
+  const devices = await pb.collection("devices").getFullList<Device>();
 
   return Promise.all(
     devices.map(async (device) => ({
@@ -139,9 +137,7 @@ export async function getSyncLogs(limit = 100): Promise<SyncLogRow[]> {
   const pb = await getAuthenticatedClient();
   if (!pb) return [];
 
-  const devices = await pb.collection("devices").getFullList<Device>({
-    fields: "id,name",
-  });
+  const devices = await pb.collection("devices").getFullList<Device>();
 
   const logsResult = await pb.collection("sync_logs").getList<SyncLog>(1, limit, {
     sort: "-created",

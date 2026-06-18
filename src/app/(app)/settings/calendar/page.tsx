@@ -1,13 +1,26 @@
 import { Calendar } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
+import {
+  DataTable,
+  DataTableBody,
+  DataTableCell,
+  DataTableHead,
+  DataTableHeader,
+  DataTableRow,
+} from "@/components/layout/data-table";
+import { PageBody } from "@/components/layout/page-body";
+import { PageHeader } from "@/components/layout/page-header";
+import { PageSection } from "@/components/layout/page-section";
+import { PageShell } from "@/components/layout/page-shell";
 import { EmptyState } from "@/components/empty-state";
 import { SettingsNav } from "@/components/settings-nav";
 import { Badge } from "@/components/ui/badge";
+import { H3 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 import { formatDateTime } from "@/lib/dates";
 import { getCalendarSourcesWithStats } from "@/lib/sync/observability";
 
 function sourceTypeLabel(sourceType: string) {
-  if (sourceType === "eventkit") return "EventKit (Apple Calendar)";
+  if (sourceType === "eventkit") return "EventKit";
   if (sourceType === "internal") return "Internal";
   return sourceType;
 }
@@ -16,80 +29,77 @@ export default async function CalendarSettingsPage() {
   const sources = await getCalendarSourcesWithStats();
 
   return (
-    <>
-      <AppHeader
+    <PageShell>
+      <PageHeader
         title="Settings"
-        description="Manage sync devices and integrations"
+        description="Calendar sources synced from your Mac"
       />
-      <SettingsNav />
+      <PageBody>
+        <SettingsNav />
 
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold">Calendar sources</h2>
-          <p className="text-sm text-muted-foreground">
-            Calendars synced from your Mac via EventKit. Enabled sources are included
-            in agent uploads when selected in the macOS app.
-          </p>
-        </div>
-
-        {sources.length === 0 ? (
-          <EmptyState
-            icon={<Calendar className="size-5" />}
-            title="No calendar sources"
-            description="Install and run the macOS EventKit sync agent on a registered device to import Apple Calendar sources."
-          />
-        ) : (
-          <div className="overflow-x-auto rounded-xl border">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead className="border-b bg-muted/50 text-left">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Calendar</th>
-                  <th className="px-4 py-3 font-medium">Source type</th>
-                  <th className="px-4 py-3 font-medium">Selected</th>
-                  <th className="px-4 py-3 font-medium">Last synced</th>
-                  <th className="px-4 py-3 font-medium">Events</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y bg-card">
-                {sources.map(({ source, eventCount, lastSyncedAt }) => (
-                  <tr key={source.id}>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <span
-                          className="size-3 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor: source.color ?? "var(--primary)",
-                          }}
-                        />
-                        <div>
-                          <p className="font-medium">{source.name}</p>
-                          {source.externalId ? (
-                            <p className="text-xs text-muted-foreground">
-                              {source.externalId}
-                            </p>
-                          ) : null}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {sourceTypeLabel(source.sourceType)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge variant={source.isEnabled !== false ? "default" : "secondary"}>
-                        {source.isEnabled !== false ? "Enabled" : "Disabled"}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {formatDateTime(lastSyncedAt)}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums">{eventCount}</td>
+        <PageSection
+          title="Calendar sources"
+          description="Calendars synced via EventKit. Enabled sources are included when selected in the macOS agent."
+        >
+          {sources.length === 0 ? (
+            <EmptyState
+              icon={<Calendar className="size-5" />}
+              title="No calendar sources"
+              description="Run the macOS EventKit sync agent on a registered device to import Apple Calendar sources."
+            />
+          ) : (
+            <DataTable className="overflow-x-auto">
+              <table className="w-full min-w-[720px]">
+                <DataTableHeader>
+                  <tr>
+                    <DataTableHead>Calendar</DataTableHead>
+                    <DataTableHead>Type</DataTableHead>
+                    <DataTableHead>Status</DataTableHead>
+                    <DataTableHead>Last synced</DataTableHead>
+                    <DataTableHead>Events</DataTableHead>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </>
+                </DataTableHeader>
+                <DataTableBody>
+                  {sources.map(({ source, eventCount, lastSyncedAt }) => (
+                    <DataTableRow key={source.id}>
+                      <DataTableCell>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="size-2 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor: source.color ?? "var(--foreground)",
+                            }}
+                          />
+                          <div>
+                            <H3 className="font-normal">{source.name}</H3>
+                            {source.externalId ? (
+                              <Small className="text-muted-foreground">
+                                {source.externalId}
+                              </Small>
+                            ) : null}
+                          </div>
+                        </div>
+                      </DataTableCell>
+                      <DataTableCell className="text-muted-foreground">
+                        {sourceTypeLabel(source.sourceType)}
+                      </DataTableCell>
+                      <DataTableCell>
+                        <Badge variant={source.isEnabled !== false ? "success" : "secondary"}>
+                          {source.isEnabled !== false ? "Enabled" : "Disabled"}
+                        </Badge>
+                      </DataTableCell>
+                      <DataTableCell className="text-muted-foreground">
+                        {formatDateTime(lastSyncedAt)}
+                      </DataTableCell>
+                      <DataTableCell className="tabular-nums">{eventCount}</DataTableCell>
+                    </DataTableRow>
+                  ))}
+                </DataTableBody>
+              </table>
+            </DataTable>
+          )}
+        </PageSection>
+      </PageBody>
+    </PageShell>
   );
 }

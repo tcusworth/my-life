@@ -1,0 +1,94 @@
+[
+  {
+    "id": "pbc_pendwr001",
+    "name": "pending_calendar_writes",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "pcw_user01",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "pcw_dev001",
+        "name": "device",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_devices001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "pcw_oper01",
+        "name": "operation",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "create",
+          "update",
+          "delete"
+        ]
+      },
+      {
+        "id": "pcw_pay001",
+        "name": "payload",
+        "type": "json",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSize": 2000000
+      },
+      {
+        "id": "pcw_stat01",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "pending",
+          "processing",
+          "completed",
+          "failed"
+        ]
+      },
+      {
+        "id": "pcw_err001",
+        "name": "errorMessage",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_pending_writes_status ON pending_calendar_writes (status)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

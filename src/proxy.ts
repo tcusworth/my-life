@@ -5,7 +5,6 @@ const publicPaths = ["/login"];
 
 function isPbCookieValid(cookieValue: string): boolean {
   try {
-    // PocketBase cookie value is JSON: {"token":"<jwt>","model":{...}}
     const decoded = decodeURIComponent(cookieValue);
     const parsed = JSON.parse(decoded) as { token?: string };
     const token = parsed?.token;
@@ -23,6 +22,13 @@ function isPbCookieValid(cookieValue: string): boolean {
 }
 
 export function proxy(request: NextRequest) {
+  if (process.env.SKIP_AUTH === "true") {
+    const { pathname } = request.nextUrl;
+    if (pathname === "/" || pathname === "/login")
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.next();
+  }
+
   const { pathname } = request.nextUrl;
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 

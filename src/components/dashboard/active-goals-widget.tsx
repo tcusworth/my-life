@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { Target } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Small } from "@/components/ui/typography";
 import { formatDate } from "@/lib/dates";
 import type { Goal } from "@/types/pocketbase";
 
@@ -17,30 +16,33 @@ interface ActiveGoalsWidgetProps {
 
 export function ActiveGoalsWidget({ goals }: ActiveGoalsWidgetProps) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Target className="size-4 text-primary" />
-          Active Goals
-        </CardTitle>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Active goals</CardTitle>
         <CardDescription>What you are working toward</CardDescription>
       </CardHeader>
       <CardContent>
         {goals.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No active goals yet.</p>
+          <Small className="text-muted-foreground">No active goals yet.</Small>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {goals.map((goal) => (
               <li key={goal.id} className="space-y-1">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-sm font-medium leading-snug">{goal.title}</p>
+                  <p className="type-h3 font-normal">{goal.title}</p>
                   {goal.progress != null && (
-                    <Badge variant="secondary">{goal.progress}%</Badge>
+                    <Badge variant="outline">{goal.progress}%</Badge>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-                  {goal.expand?.area && <span>{goal.expand.area.name}</span>}
-                  {goal.targetDate && <span>Target {formatDate(goal.targetDate)}</span>}
+                <div className="flex flex-wrap gap-x-3">
+                  {goal.expand?.area && (
+                    <Small className="text-muted-foreground">{goal.expand.area.name}</Small>
+                  )}
+                  {goal.targetDate && (
+                    <Small className="text-muted-foreground">
+                      Target {formatDate(goal.targetDate)}
+                    </Small>
+                  )}
                 </div>
               </li>
             ))}

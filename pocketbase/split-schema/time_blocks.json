@@ -1,0 +1,80 @@
+[
+  {
+    "id": "pbc_timeblk001",
+    "name": "time_blocks",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "tb_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tb_task001",
+        "name": "task",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_tasks00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tb_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_start01",
+        "name": "startsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_end001",
+        "name": "endsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_color01",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_time_blocks_user_starts ON time_blocks (user, startsAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

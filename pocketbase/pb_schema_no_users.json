@@ -1,0 +1,1360 @@
+[
+  {
+    "id": "pbc_devices001",
+    "name": "devices",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "dev_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "dev_name001",
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "dev_plat001",
+        "name": "platform",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "macos"
+        ]
+      },
+      {
+        "id": "dev_agver01",
+        "name": "agentVersion",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "dev_lseen01",
+        "name": "lastSeenAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "dev_apikey1",
+        "name": "apiKeyHash",
+        "type": "text",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "dev_active1",
+        "name": "isActive",
+        "type": "bool",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_devices_api_key_hash ON devices (apiKeyHash)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_areas00001",
+    "name": "areas",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "area_user01",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "area_name01",
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "area_desc01",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "area_col01",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "area_icon01",
+        "name": "icon",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "area_sort01",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_projects01",
+    "name": "projects",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "prj_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "prj_area001",
+        "name": "area",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_areas00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "prj_name001",
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "prj_color01",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "prj_icon001",
+        "name": "icon",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "prj_stat001",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "active",
+          "archived"
+        ]
+      },
+      {
+        "id": "prj_sort001",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_tasks00001",
+    "name": "tasks",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "tsk_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_proj001",
+        "name": "project",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_projects01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_desc001",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_stat001",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "inbox",
+          "active",
+          "completed",
+          "cancelled",
+          "someday"
+        ]
+      },
+      {
+        "id": "tsk_prio001",
+        "name": "priority",
+        "type": "select",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
+        ]
+      },
+      {
+        "id": "tsk_due001",
+        "name": "dueAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_sched01",
+        "name": "scheduledFor",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_comp001",
+        "name": "completedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_sort001",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      },
+      {
+        "id": "tsk_cont001",
+        "name": "contact",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_contacts01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_folup01",
+        "name": "followUpAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_tasks_user_status ON tasks (user, status)",
+      "CREATE INDEX idx_tasks_user_scheduled ON tasks (user, scheduledFor)",
+      "CREATE INDEX idx_tasks_user_followup ON tasks (user, followUpAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_notes00001",
+    "name": "notes",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "nte_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "nte_proj001",
+        "name": "project",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_projects01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "nte_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "nte_cont001",
+        "name": "content",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_calsrc001",
+    "name": "calendar_sources",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "cs_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "cs_dev001",
+        "name": "device",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_devices001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "cs_extid01",
+        "name": "externalId",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "cs_name001",
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "cs_color01",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "cs_enabl01",
+        "name": "isEnabled",
+        "type": "bool",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "cs_srctyp1",
+        "name": "sourceType",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "eventkit",
+          "internal"
+        ]
+      }
+    ],
+    "indexes": [],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_calevt001",
+    "name": "calendar_events",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "ce_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "ce_src001",
+        "name": "calendarSource",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_calsrc001",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "ce_extid01",
+        "name": "externalId",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_desc001",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_loc001",
+        "name": "location",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_start01",
+        "name": "startsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_end001",
+        "name": "endsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_allday1",
+        "name": "isAllDay",
+        "type": "bool",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_recrr01",
+        "name": "recurrenceRule",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_lsync01",
+        "name": "lastSyncedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "ce_del001",
+        "name": "deletedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_calendar_events_source_external ON calendar_events (calendarSource, externalId) WHERE externalId != ''",
+      "CREATE INDEX idx_calendar_events_user_starts ON calendar_events (user, startsAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_timeblk001",
+    "name": "time_blocks",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "tb_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tb_task001",
+        "name": "task",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_tasks00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tb_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_start01",
+        "name": "startsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_end001",
+        "name": "endsAt",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tb_color01",
+        "name": "color",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_time_blocks_user_starts ON time_blocks (user, startsAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_pendwr001",
+    "name": "pending_calendar_writes",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "pcw_user01",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "pcw_dev001",
+        "name": "device",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_devices001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "pcw_oper01",
+        "name": "operation",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "create",
+          "update",
+          "delete"
+        ]
+      },
+      {
+        "id": "pcw_pay001",
+        "name": "payload",
+        "type": "json",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSize": 2000000
+      },
+      {
+        "id": "pcw_stat01",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "pending",
+          "processing",
+          "completed",
+          "failed"
+        ]
+      },
+      {
+        "id": "pcw_err001",
+        "name": "errorMessage",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_pending_writes_status ON pending_calendar_writes (status)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_synclog01",
+    "name": "sync_logs",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "sl_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "sl_dev001",
+        "name": "device",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_devices001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "sl_dir001",
+        "name": "direction",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "inbound",
+          "outbound"
+        ]
+      },
+      {
+        "id": "sl_ent001",
+        "name": "entityType",
+        "type": "text",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "sl_stat001",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "success",
+          "error",
+          "partial"
+        ]
+      },
+      {
+        "id": "sl_msg001",
+        "name": "message",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "sl_meta001",
+        "name": "metadata",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSize": 2000000
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_sync_logs_user_created ON sync_logs (user, created)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_goals00001",
+    "name": "goals",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "goal_user01",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "goal_area01",
+        "name": "area",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_areas00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "goal_title1",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_desc01",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_stat01",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "active",
+          "completed",
+          "on_hold"
+        ]
+      },
+      {
+        "id": "goal_tgt01",
+        "name": "targetDate",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "goal_prog01",
+        "name": "progress",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": 0,
+        "max": 100,
+        "noDecimal": true
+      },
+      {
+        "id": "goal_sort01",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_goals_user_status ON goals (user, status)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_contacts01",
+    "name": "contacts",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "con_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "con_name001",
+        "name": "name",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_email01",
+        "name": "email",
+        "type": "email",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_phone01",
+        "name": "phone",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_comp01",
+        "name": "company",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_notes01",
+        "name": "notes",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_folup01",
+        "name": "followUpAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "con_lcon01",
+        "name": "lastContactedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_contacts_user_followup ON contacts (user, followUpAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_activit01",
+    "name": "activities",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "act_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "act_cont001",
+        "name": "contact",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_contacts01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "act_proj001",
+        "name": "project",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_projects01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "act_goal001",
+        "name": "goal",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_goals00001",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "act_type001",
+        "name": "type",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "call",
+          "email",
+          "meeting",
+          "message",
+          "note",
+          "follow_up"
+        ]
+      },
+      {
+        "id": "act_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "act_notes01",
+        "name": "notes",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "act_occ001",
+        "name": "occurredAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "act_folup01",
+        "name": "followUpAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_activities_user_followup ON activities (user, followUpAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  },
+  {
+    "id": "pbc_dailybr01",
+    "name": "daily_briefings",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "db_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "db_date001",
+        "name": "briefingDate",
+        "type": "date",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "db_summ001",
+        "name": "summary",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "db_high001",
+        "name": "highlights",
+        "type": "json",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSize": 2000000
+      },
+      {
+        "id": "db_src001",
+        "name": "sourceInboxText",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "db_gen001",
+        "name": "generatedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX idx_daily_briefings_user_date ON daily_briefings (user, briefingDate)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

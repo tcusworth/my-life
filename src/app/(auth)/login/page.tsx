@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/providers/auth-provider";
 
 export default function LoginPage() {
@@ -26,61 +24,55 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm space-y-8">
-        <div className="space-y-2 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Sparkles className="size-6" />
+    <div style={{ minHeight: "100vh", background: "#faf7f1", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-inter), sans-serif" }}>
+      <div style={{ width: "100%", maxWidth: "380px", padding: "0 24px" }}>
+        <div style={{ textAlign: "center", marginBottom: "36px" }}>
+          <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "#0f1014", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 4 L21 19 L3 19 Z" fill="#f0ae35"/>
+              <path d="M12 4 L16.5 19 L3 19 Z" fill="#eb6532"/>
+            </svg>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight">My Life</h1>
-          <p className="text-sm text-muted-foreground">
-            Personal AI productivity — tasks, calendar, and focus in one place.
-          </p>
+          <h1 style={{ fontFamily: "var(--font-fraunces), serif", fontSize: "28px", fontWeight: 500, color: "#0f1014", margin: "0 0 8px" }}>My Life</h1>
+          <p style={{ fontSize: "14px", color: "#80859a", margin: 0 }}>Sign in to your workspace</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Email
-            </label>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div>
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#5b606f", marginBottom: "6px", letterSpacing: "0.04em" }}>Email</label>
             <input
               type="email"
               required
               autoFocus
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={e => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1px solid #d7dae3", background: "#fff", fontFamily: "inherit", fontSize: "14.5px", color: "#15171d", outline: "none", boxSizing: "border-box" }}
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Password
-            </label>
+          <div>
+            <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#5b606f", marginBottom: "6px", letterSpacing: "0.04em" }}>Password</label>
             <input
               type="password"
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", border: "1px solid #d7dae3", background: "#fff", fontFamily: "inherit", fontSize: "14.5px", color: "#15171d", outline: "none", boxSizing: "border-box" }}
             />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
+            <p style={{ margin: 0, fontSize: "13px", color: "#b84a1f", background: "#fdeee6", padding: "10px 14px", borderRadius: "9px" }}>{error}</p>
           )}
 
-          <Button
+          <button
             type="submit"
-            className="w-full"
-            size="lg"
             disabled={loading}
+            style={{ marginTop: "4px", padding: "12px", borderRadius: "10px", border: "none", background: "#0f1014", color: "#faf7f1", fontFamily: "inherit", fontSize: "14px", fontWeight: 600, cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "Signing in…" : "Sign in"}
-          </Button>
+          </button>
         </form>
       </div>
     </div>

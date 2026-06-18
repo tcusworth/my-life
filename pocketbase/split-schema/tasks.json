@@ -1,0 +1,158 @@
+[
+  {
+    "id": "pbc_tasks00001",
+    "name": "tasks",
+    "type": "base",
+    "system": false,
+    "fields": [
+      {
+        "id": "tsk_user001",
+        "name": "user",
+        "type": "relation",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "_pb_users_auth_",
+        "cascadeDelete": true,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_proj001",
+        "name": "project",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_projects01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_title01",
+        "name": "title",
+        "type": "text",
+        "required": true,
+        "presentable": true,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_desc001",
+        "name": "description",
+        "type": "text",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_stat001",
+        "name": "status",
+        "type": "select",
+        "required": true,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "inbox",
+          "active",
+          "completed",
+          "cancelled",
+          "someday"
+        ]
+      },
+      {
+        "id": "tsk_prio001",
+        "name": "priority",
+        "type": "select",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "maxSelect": 1,
+        "values": [
+          "low",
+          "medium",
+          "high",
+          "urgent"
+        ]
+      },
+      {
+        "id": "tsk_due001",
+        "name": "dueAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_sched01",
+        "name": "scheduledFor",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_comp001",
+        "name": "completedAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      },
+      {
+        "id": "tsk_sort001",
+        "name": "sortOrder",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "min": null,
+        "max": null,
+        "noDecimal": true
+      },
+      {
+        "id": "tsk_cont001",
+        "name": "contact",
+        "type": "relation",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false,
+        "collectionId": "pbc_contacts01",
+        "cascadeDelete": false,
+        "maxSelect": 1,
+        "minSelect": 0
+      },
+      {
+        "id": "tsk_folup01",
+        "name": "followUpAt",
+        "type": "date",
+        "required": false,
+        "presentable": false,
+        "system": false,
+        "hidden": false
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX idx_tasks_user_status ON tasks (user, status)",
+      "CREATE INDEX idx_tasks_user_scheduled ON tasks (user, scheduledFor)",
+      "CREATE INDEX idx_tasks_user_followup ON tasks (user, followUpAt)"
+    ],
+    "listRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "viewRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "createRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "updateRule": "@request.auth.id != \"\" && user = @request.auth.id",
+    "deleteRule": "@request.auth.id != \"\" && user = @request.auth.id"
+  }
+]

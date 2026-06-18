@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { H3 } from "@/components/ui/typography";
+import { Small } from "@/components/ui/typography";
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -18,18 +20,16 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 px-6 py-16 text-center",
+        "surface-empty flex flex-col items-center justify-center px-6 py-12 text-center",
         className
       )}
     >
       {icon && (
-        <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          {icon}
-        </div>
+        <div className="mb-3 text-muted-foreground/60">{icon}</div>
       )}
-      <h3 className="text-base font-medium">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-muted-foreground">{description}</p>
-      {action && <div className="mt-6">{action}</div>}
+      <H3 className="text-foreground/90">{title}</H3>
+      <Small className="mt-1 max-w-sm text-muted-foreground">{description}</Small>
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }

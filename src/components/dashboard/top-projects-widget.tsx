@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FolderKanban } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Small } from "@/components/ui/typography";
 import type { Project } from "@/types/pocketbase";
 
 interface TopProjectsWidgetProps {
@@ -16,27 +16,24 @@ interface TopProjectsWidgetProps {
 
 export function TopProjectsWidget({ projects }: TopProjectsWidgetProps) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <FolderKanban className="size-4 text-primary" />
-          Top Projects
-        </CardTitle>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Top projects</CardTitle>
         <CardDescription>Active projects by priority</CardDescription>
       </CardHeader>
       <CardContent>
         {projects.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No active projects.</p>
+          <Small className="text-muted-foreground">No active projects.</Small>
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-4">
             {projects.map((project) => (
               <li key={project.id} className="flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm font-medium">{project.name}</p>
+                  <p className="type-h3 font-normal">{project.name}</p>
                   {project.expand?.area && (
-                    <p className="text-xs text-muted-foreground">
+                    <Small className="text-muted-foreground">
                       {project.expand.area.name}
-                    </p>
+                    </Small>
                   )}
                 </div>
                 <Badge variant="outline">{project.status}</Badge>
@@ -46,7 +43,7 @@ export function TopProjectsWidget({ projects }: TopProjectsWidgetProps) {
         )}
         <Link
           href="/projects"
-          className="mt-4 inline-block text-xs font-medium text-primary hover:underline"
+          className="type-small mt-4 inline-block text-foreground hover:underline"
         >
           View all projects
         </Link>

@@ -57,7 +57,7 @@ export function RegisterSyncAgentForm() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {apiKey && (
-        <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-4 text-sm">
+        <div className="surface-card surface-flush border-amber-500/30 bg-amber-500/[0.04] p-4">
           <p className="font-medium">Save this API key — it will not be shown again.</p>
           {deviceId && (
             <p className="mt-1 text-xs text-muted-foreground">Agent ID: {deviceId}</p>

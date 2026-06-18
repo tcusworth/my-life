@@ -40,8 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# claude code session data
+# Claude Code
 .claude/
-
-# design handoff uploads
-/project/
+project/
