@@ -68,8 +68,15 @@ export async function GET(request: NextRequest) {
       scopes: tokenData.scope ?? "",
     });
   } catch (err) {
-    console.error("[callback/google] upsertOAuthConnection failed:", err);
-    return Response.json({ error: String(err) }, { status: 500 });
+    const e = err as any;
+    const detail = {
+      message: e?.message,
+      status: e?.status,
+      response: e?.response,
+      url: e?.url,
+    };
+    console.error("[callback/google] upsertOAuthConnection failed:", JSON.stringify(detail));
+    return Response.json({ error: String(err), detail }, { status: 500 });
   }
 
   return NextResponse.redirect(new URL("/settings?connected=google", request.url));
