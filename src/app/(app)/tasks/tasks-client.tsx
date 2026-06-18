@@ -21,17 +21,6 @@ const VIEWS: { key: View; label: string }[] = [
   { key: "someday", label: "Someday" },
 ];
 
-function computeNextDueAt(dueAt: string | undefined, rule: RecurrenceRule): string {
-  const base = dueAt ? new Date(dueAt) : new Date();
-  switch (rule) {
-    case "daily": base.setDate(base.getDate() + 1); break;
-    case "weekly": base.setDate(base.getDate() + 7); break;
-    case "biweekly": base.setDate(base.getDate() + 14); break;
-    case "monthly": base.setMonth(base.getMonth() + 1); break;
-  }
-  return base.toISOString();
-}
-
 function parseInput(raw: string): { title: string; dueAt?: string; priority?: TaskPriority } {
   let text = raw.trim();
   let priority: TaskPriority | undefined;
@@ -96,6 +85,33 @@ const sel: React.CSSProperties = {
   cursor: "pointer",
 };
 
+const smallSel: React.CSSProperties = {
+  padding: "5px 8px",
+  borderRadius: 6,
+  border: "1px solid #d7dae3",
+  background: "#f5f6f9",
+  fontFamily: "inherit",
+  fontSize: 12,
+  color: "#5b606f",
+  cursor: "pointer",
+};
+
+const iconBtn: React.CSSProperties = {
+  width: 26,
+  height: 26,
+  border: "none",
+  background: "transparent",
+  cursor: "pointer",
+  color: "#c8ccd6",
+  padding: 0,
+  fontSize: 13,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  flexShrink: 0,
+  borderRadius: 5,
+};
+
 export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [view, setView] = useState<View>("inbox");
@@ -106,6 +122,11 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
   const [subtaskParent, setSubtaskParent] = useState<string | null>(null);
   const [subtaskTitle, setSubtaskTitle] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editStatus, setEditStatus] = useState<NewStatus>("inbox");
+  const [editPriority, setEditPriority] = useState<TaskPriority | "">("");
   const [, startTransition] = useTransition();
 
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -157,7 +178,8 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
 
   async function createTask(e: React.FormEvent) {
     e.preventDefault();
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim() || creating) return;
+    setCreating(true);
     setCreateError(null);
     const { title, dueAt, priority } = parseInput(newTitle);
     try {
@@ -183,6 +205,8 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
       setNewRecurrence("none");
     } catch (err) {
       setCreateError(String(err));
+    } finally {
+      setCreating(false);
     }
   }
 
@@ -222,6 +246,41 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
     }
   }
 
+  function startEdit(task: Task) {
+    setEditingId(task.id);
+    setEditTitle(task.title);
+    const s = task.status === "inbox" || task.status === "active" || task.status === "someday"
+      ? task.status
+      : "inbox";
+    setEditStatus(s);
+    setEditPriority(task.priority ?? "");
+  }
+
+  async function saveEdit(id: string) {
+    if (!editTitle.trim()) return;
+    const res = await fetch(`/api/tasks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: editTitle.trim(),
+        status: editStatus,
+        priority: editPriority || "",
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...data.task } : t)));
+      setEditingId(null);
+    }
+  }
+
+  async function deleteTask(id: string) {
+    const res = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setTasks((prev) => prev.filter((t) => t.id !== id && t.parentTask !== id));
+    }
+  }
+
   function toggleExpand(id: string) {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -231,6 +290,95 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
   }
 
   function renderTask(task: Task, isSubtask = false): React.ReactNode {
+    if (editingId === task.id) {
+      return (
+        <div key={task.id} style={{ marginBottom: 3 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "10px 14px",
+              background: "#fff",
+              border: "1px solid #29a8b2",
+              borderRadius: 11,
+            }}
+          >
+            <input
+              autoFocus
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveEdit(task.id);
+                if (e.key === "Escape") setEditingId(null);
+              }}
+              style={{
+                flex: 1,
+                border: "none",
+                outline: "none",
+                fontFamily: "inherit",
+                fontSize: 14,
+                color: "#15171d",
+                background: "transparent",
+              }}
+            />
+            <select
+              value={editStatus}
+              onChange={(e) => setEditStatus(e.target.value as NewStatus)}
+              style={smallSel}
+            >
+              <option value="inbox">Inbox</option>
+              <option value="active">Active</option>
+              <option value="someday">Someday</option>
+            </select>
+            <select
+              value={editPriority}
+              onChange={(e) => setEditPriority(e.target.value as TaskPriority | "")}
+              style={smallSel}
+            >
+              <option value="">No priority</option>
+              <option value="urgent">!! Urgent</option>
+              <option value="high">! High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <button
+              onClick={() => saveEdit(task.id)}
+              style={{
+                padding: "6px 12px",
+                borderRadius: 7,
+                border: "none",
+                background: "#0f1014",
+                color: "#faf7f1",
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                fontWeight: 600,
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Save
+            </button>
+            <button
+              onClick={() => setEditingId(null)}
+              style={{
+                padding: "6px 10px",
+                borderRadius: 7,
+                border: "1px solid #eceef3",
+                background: "transparent",
+                fontFamily: "inherit",
+                fontSize: 12.5,
+                color: "#80859a",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     const subtasks = isSubtask ? [] : getSubtasks(task.id);
     const progress = isSubtask ? { done: 0, total: 0 } : getProgress(task.id);
     const isExpanded = expanded.has(task.id);
@@ -354,6 +502,16 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
               {due.label}
             </span>
           )}
+
+          {/* Edit */}
+          <button onClick={() => startEdit(task)} title="Edit" style={iconBtn}>
+            ✎
+          </button>
+
+          {/* Delete */}
+          <button onClick={() => deleteTask(task.id)} title="Delete" style={iconBtn}>
+            ✕
+          </button>
         </div>
 
         {/* Expanded subtasks */}
@@ -442,7 +600,6 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
             )}
           </div>
         )}
-
       </div>
     );
   }
@@ -472,19 +629,20 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
           />
           <button
             type="submit"
+            disabled={creating}
             style={{
               padding: "11px 22px",
               borderRadius: 10,
               border: "none",
-              background: "#0f1014",
+              background: creating ? "#80859a" : "#0f1014",
               color: "#faf7f1",
               fontFamily: "inherit",
               fontSize: 14,
               fontWeight: 600,
-              cursor: "pointer",
+              cursor: creating ? "default" : "pointer",
             }}
           >
-            Add
+            {creating ? "Adding…" : "Add"}
           </button>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -508,13 +666,11 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
             <option value="biweekly">Biweekly</option>
             <option value="monthly">Monthly</option>
           </select>
+          {newRecurrence !== "none" && (
+            <span style={{ fontSize: 12, color: "#29a8b2" }}>↻ Repeats {newRecurrence}</span>
+          )}
           {createError && (
             <span style={{ fontSize: 12, color: "#eb6532" }}>{createError}</span>
-          )}
-          {newRecurrence !== "none" && (
-            <span style={{ fontSize: 12, color: "#29a8b2" }}>
-              ↻ Repeats {newRecurrence}
-            </span>
           )}
         </div>
       </form>

@@ -41,3 +41,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   return Response.json({ task, nextTask });
 }
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const pb = await getAuthenticatedClient();
+  if (!pb) return Response.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { id } = await params;
+  await pb.collection("tasks").delete(id);
+  return Response.json({ ok: true });
+}
+
