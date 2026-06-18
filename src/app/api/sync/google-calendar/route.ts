@@ -47,7 +47,7 @@ export async function POST() {
       `sourceType = "google"`,
     ].join(" && ");
 
-    let existingSources: Awaited<ReturnType<typeof pb.collection<"calendar_sources">["getList"]>>;
+    let existingSources: Awaited<ReturnType<ReturnType<typeof pb.collection>["getList"]>>;
     try {
       existingSources = await pb
         .collection("calendar_sources")
@@ -100,7 +100,7 @@ export async function POST() {
         `externalId = "${escapeFilterValue(ev.id)}"`,
       ].join(" && ");
 
-      let existingEvents: Awaited<ReturnType<typeof pb.collection<"calendar_events">["getList"]>>;
+      let existingEvents: Awaited<ReturnType<ReturnType<typeof pb.collection>["getList"]>>;
       try {
         existingEvents = await pb
           .collection("calendar_events")
