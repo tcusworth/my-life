@@ -15,6 +15,7 @@ const SCREEN_MAP: Record<string, ScreenMeta> = {
   "/dashboard": ["Workspace", "Home"],
   "/today": ["Plan", "Today"],
   "/inbox": ["Capture", "Inbox"],
+  "/tasks": ["Focus", "Tasks"],
   "/projects": ["Portfolio", "Projects"],
   "/calendar": ["Schedule", "Calendar"],
   "/goals": ["Direction", "Goals"],

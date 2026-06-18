@@ -1,19 +1,25 @@
-import { startOfWeek, endOfWeek, format } from "date-fns";
+import { startOfWeek, endOfWeek, format, addWeeks } from "date-fns";
 import { getAuthenticatedClient } from "@/lib/pocketbase/server";
 import type { CalendarEvent } from "@/types/pocketbase";
 import SyncOnMount from "@/components/SyncOnMount";
 import { CalendarGrid } from "./calendar-grid-client";
 
-const mockEvents: CalendarEvent[] = [];
+export default async function CalendarPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ week?: string }>;
+}) {
+  const { week } = await searchParams;
+  const base = week ? new Date(week) : new Date();
+  const weekStart = startOfWeek(base, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(base, { weekStartsOn: 1 });
 
-export default async function CalendarPage() {
-  const now = new Date();
-  const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-  const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+  const prevWeek = addWeeks(weekStart, -1).toISOString().slice(0, 10);
+  const nextWeek = addWeeks(weekStart, 1).toISOString().slice(0, 10);
+  const todayParam = new Date().toISOString().slice(0, 10);
 
   const pb = await getAuthenticatedClient();
-
-  let calEvents: CalendarEvent[] = mockEvents;
+  let calEvents: CalendarEvent[] = [];
   let eventCount = 0;
   let syncedLabel = "No events synced yet";
 
@@ -48,18 +54,23 @@ export default async function CalendarPage() {
             {syncedLabel}{eventCount > 0 ? ` · ${eventCount} event${eventCount !== 1 ? "s" : ""} this week` : ""}
           </p>
         </div>
-        <a
-          href="/calendar"
-          style={{ fontSize: 13, fontWeight: 500, padding: "8px 14px", borderRadius: 9, border: "1px solid #d7dae3", background: "#fff", cursor: "pointer", color: "#2c2f3a", textDecoration: "none" }}
-        >
-          Today
-        </a>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <a href={`/calendar?week=${prevWeek}`} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 9, border: "1px solid #d7dae3", background: "#fff", cursor: "pointer", textDecoration: "none", color: "#2c2f3a" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </a>
+          <a href={`/calendar?week=${todayParam}`} style={{ fontSize: 13, fontWeight: 500, padding: "8px 14px", borderRadius: 9, border: "1px solid #d7dae3", background: "#fff", cursor: "pointer", color: "#2c2f3a", textDecoration: "none" }}>
+            Today
+          </a>
+          <a href={`/calendar?week=${nextWeek}`} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 9, border: "1px solid #d7dae3", background: "#fff", cursor: "pointer", textDecoration: "none", color: "#2c2f3a" }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </a>
+        </div>
       </div>
 
       <CalendarGrid
         events={calEvents}
         weekStartIso={weekStart.toISOString()}
-        todayIso={now.toISOString()}
+        todayIso={new Date().toISOString()}
       />
     </div>
   );
