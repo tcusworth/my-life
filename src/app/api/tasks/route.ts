@@ -7,15 +7,16 @@ export async function POST(request: Request) {
   const userId = pb.authStore.model?.id as string;
   const body = await request.json();
 
-  const task = await pb.collection("tasks").create({
+  const data: Record<string, unknown> = {
     user: userId,
     title: body.title,
     status: body.status ?? "inbox",
-    priority: body.priority,
-    dueAt: body.dueAt,
-    recurrenceRule: body.recurrenceRule,
-    parentTask: body.parentTask,
-  });
+  };
+  if (body.priority) data.priority = body.priority;
+  if (body.dueAt) data.dueAt = body.dueAt;
+  if (body.recurrenceRule) data.recurrenceRule = body.recurrenceRule;
+  if (body.parentTask) data.parentTask = body.parentTask;
 
+  const task = await pb.collection("tasks").create(data);
   return Response.json(task);
 }

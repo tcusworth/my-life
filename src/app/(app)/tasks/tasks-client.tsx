@@ -80,7 +80,7 @@ function formatDue(iso: string): { label: string; overdue: boolean } {
   if (d === todayStr) return { label: "Today", overdue: false };
   if (d === tomorrowStr) return { label: "Tmrw", overdue: false };
   return {
-    label: new Date(iso + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    label: new Date(d + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     overdue: d < todayStr,
   };
 }
@@ -105,6 +105,7 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [subtaskParent, setSubtaskParent] = useState<string | null>(null);
   const [subtaskTitle, setSubtaskTitle] = useState("");
+  const [createError, setCreateError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -157,23 +158,31 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
   async function createTask(e: React.FormEvent) {
     e.preventDefault();
     if (!newTitle.trim()) return;
+    setCreateError(null);
     const { title, dueAt, priority } = parseInput(newTitle);
-    const res = await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        status: newStatus,
-        priority,
-        dueAt,
-        recurrenceRule: newRecurrence !== "none" ? newRecurrence : undefined,
-      }),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          status: newStatus,
+          priority,
+          dueAt,
+          recurrenceRule: newRecurrence !== "none" ? newRecurrence : undefined,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => null);
+        setCreateError(err?.error ?? `Error ${res.status}`);
+        return;
+      }
       const created = await res.json();
       setTasks((prev) => [created, ...prev]);
       setNewTitle("");
       setNewRecurrence("none");
+    } catch (err) {
+      setCreateError(String(err));
     }
   }
 
@@ -499,6 +508,9 @@ export function TasksClient({ initialTasks }: { initialTasks: Task[] }) {
             <option value="biweekly">Biweekly</option>
             <option value="monthly">Monthly</option>
           </select>
+          {createError && (
+            <span style={{ fontSize: 12, color: "#eb6532" }}>{createError}</span>
+          )}
           {newRecurrence !== "none" && (
             <span style={{ fontSize: 12, color: "#29a8b2" }}>
               ↻ Repeats {newRecurrence}
