@@ -1,39 +1,35 @@
 import { NextResponse, type NextRequest } from "next/server";
-import PocketBase from "pocketbase";
-import { AUTH_COOKIE_NAME, POCKETBASE_URL } from "@/lib/pocketbase/config";
+import { AUTH_COOKIE_NAME } from "@/lib/pocketbase/config";
 
 const publicPaths = ["/login"];
 
-export function middleware(request: NextRequest) {
+function isPbCookieValid(cookieValue: string): boolean {
+  try {
+    // PocketBase cookie value is JSON: {"token":"<jwt>","model":{...}}
+    const decoded = decodeURIComponent(cookieValue);
+    const parsed = JSON.parse(decoded) as { token?: string };
+    const token = parsed?.token;
+    if (!token) return false;
+
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(
+      Buffer.from(parts[1], "base64url").toString("utf-8")
+    );
+    return typeof payload.exp === "number" && payload.exp > Math.floor(Date.now() / 1000);
+  } catch {
+    return false;
+  }
+}
+
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
-  const pb = new PocketBase(POCKETBASE_URL);
-  pb.autoCancellation(false);
-
   const authCookie = request.cookies.get(AUTH_COOKIE_NAME);
-  if (authCookie?.value) {
-    pb.authStore.loadFromCookie(`${AUTH_COOKIE_NAME}=${authCookie.value}`);
-  }
-
-  // Skip authRefresh — SDK v0.27 misparses PocketBase v0.39 response format.
-  const isAuthenticated = pb.authStore.isValid;
-
-  const response = NextResponse.next();
-
-  if (pb.authStore.isValid) {
-    response.headers.set(
-      "set-cookie",
-      pb.authStore.exportToCookie({
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "Lax",
-        path: "/",
-      })
-    );
-  } else if (authCookie?.value) {
-    response.cookies.delete(AUTH_COOKIE_NAME);
-  }
+  const isAuthenticated = authCookie?.value
+    ? isPbCookieValid(authCookie.value)
+    : false;
 
   if (pathname === "/") {
     return NextResponse.redirect(
@@ -45,7 +41,7 @@ export function middleware(request: NextRequest) {
     if (isAuthenticated && pathname === "/login") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
-    return response;
+    return NextResponse.next();
   }
 
   if (!isAuthenticated) {
@@ -54,7 +50,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {
