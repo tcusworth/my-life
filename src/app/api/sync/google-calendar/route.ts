@@ -106,6 +106,7 @@ export async function POST() {
     return Response.json({ synced: { calendars: calendars.length, events: totalEvents } });
   } catch (err) {
     console.error("[google-calendar sync] unhandled error:", err);
-    return Response.json({ error: String(err) }, { status: 500 });
+    const pbErr = err as { data?: unknown; status?: number; message?: string };
+    return Response.json({ error: String(err), data: pbErr?.data, status: pbErr?.status }, { status: 500 });
   }
 }
