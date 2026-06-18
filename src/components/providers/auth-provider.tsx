@@ -15,7 +15,7 @@ import type { User } from "@/types/pocketbase";
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
-  login: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -40,10 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsubscribe;
   }, [pb]);
 
-  const login = useCallback(async () => {
-    await pb.collection("users").authWithOAuth2({
-      provider: "google",
-    });
+  const login = useCallback(async (email: string, password: string) => {
+    await pb.collection("users").authWithPassword(email, password);
     router.push("/dashboard");
     router.refresh();
   }, [pb, router]);

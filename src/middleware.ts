@@ -4,7 +4,7 @@ import { AUTH_COOKIE_NAME, POCKETBASE_URL } from "@/lib/pocketbase/config";
 
 const publicPaths = ["/login"];
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
 
@@ -16,17 +16,8 @@ export async function middleware(request: NextRequest) {
     pb.authStore.loadFromCookie(`${AUTH_COOKIE_NAME}=${authCookie.value}`);
   }
 
-  let isAuthenticated = pb.authStore.isValid;
-
-  if (isAuthenticated) {
-    try {
-      await pb.collection("users").authRefresh();
-      isAuthenticated = pb.authStore.isValid;
-    } catch {
-      pb.authStore.clear();
-      isAuthenticated = false;
-    }
-  }
+  // Skip authRefresh — SDK v0.27 misparses PocketBase v0.39 response format.
+  const isAuthenticated = pb.authStore.isValid;
 
   const response = NextResponse.next();
 
